@@ -29,6 +29,9 @@
 
 <body>
 
+  <!-- Skip to main content (keyboard / screen-reader navigation) -->
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
   <!-- ════════════════════════════════════════════════════
        ONBOARDING OVERLAY (shown on first visit only)
   ════════════════════════════════════════════════════ -->
@@ -70,7 +73,7 @@
   <!-- ════════════════════════════════════════════════════
        MAIN APP CONTENT
   ════════════════════════════════════════════════════ -->
-  <main class="app-container" role="main">
+  <main class="app-container" role="main" id="main-content">
 
     <!-- ── VIEW: Daily Logger ── -->
     <section class="app-view" id="view-logger" aria-label="Daily activity logger">
@@ -82,7 +85,15 @@
       </header>
 
       <!-- Logger is rendered here by activityLogger.js -->
-      <div id="logger-section" role="form" aria-label="Activity log form"></div>
+      <div id="logger-section"
+           role="form"
+           aria-label="Activity log form"
+           aria-describedby="logger-desc">
+      </div>
+      <p id="logger-desc" class="sr-only">
+        Fill in your transport, food, energy, and shopping activities for today.
+        Each section shows a live CO₂e estimate as you enter values.
+      </p>
 
     </section>
 
@@ -100,7 +111,8 @@
       </div>
 
       <!-- Insight is rendered here by app.js after a log is submitted -->
-      <div id="insights-section"></div>
+      <!-- aria-live=polite: screen readers announce the new insight without interrupting -->
+      <div id="insights-section" aria-live="polite" aria-atomic="true"></div>
 
       <!-- Empty state (before first log) -->
       <div id="insights-empty-state" class="glass-card" style="max-width:520px;margin:2rem auto;text-align:center;padding:3rem 2rem;">

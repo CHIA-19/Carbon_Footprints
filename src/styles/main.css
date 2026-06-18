@@ -1095,3 +1095,124 @@ body::after {
 .app-ready .app-view:not(.hidden) {
   animation: fadeIn 0.3s ease;
 }
+
+/* ============================================================
+   ACCESSIBILITY (Phase 8)
+   ============================================================ */
+
+/* Skip-to-content link — invisible until focused via keyboard */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: var(--space-md);
+  background: var(--accent-green);
+  color: var(--bg-primary);
+  padding: 0.6rem 1.2rem;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.9rem;
+  z-index: 9999;
+  transition: top 0.2s;
+  text-decoration: none;
+}
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid var(--bg-primary);
+  outline-offset: 2px;
+}
+
+/* Global visible focus ring — replaces browser default with a clear indicator */
+:focus-visible {
+  outline: 2px solid var(--accent-green);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Remove default focus ring only when we've explicitly set :focus-visible */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Stepper buttons — minimum 44×44 px touch target (WCAG 2.5.5) */
+.stepper-btn {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Nav buttons — adequate touch target */
+.nav-btn {
+  min-height: 44px;
+}
+
+/* Option buttons in onboarding — generous tap targets */
+.option-btn {
+  min-height: 64px;
+}
+
+/* Stepper large buttons */
+.stepper-btn-lg {
+  min-width: 52px;
+  min-height: 52px;
+}
+
+/* Form inputs — adequate height for mobile */
+.form-field select,
+.form-field input[type="number"] {
+  min-height: 44px;
+}
+
+/* Ensure all interactive elements have visible focus states */
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-ghost:focus-visible {
+  outline: 2px solid var(--accent-green);
+  outline-offset: 3px;
+}
+
+.nav-btn:focus-visible {
+  outline: 2px solid var(--accent-green);
+  outline-offset: 2px;
+}
+
+.option-btn:focus-visible {
+  outline: 2px solid var(--accent-green);
+  outline-offset: 3px;
+}
+
+/* ── Forced colors (Windows High Contrast) ── */
+@media (forced-colors: active) {
+  .glass-card {
+    border: 1px solid ButtonText;
+    background: Canvas;
+  }
+  .btn-primary,
+  .btn-secondary {
+    border: 2px solid ButtonText;
+  }
+  .nav-btn.nav-active {
+    border: 2px solid Highlight;
+  }
+  /* Ensure status indicators are not color-only */
+  .val-high::before   { content: '⚠ '; }
+  .val-medium::before { content: '~ '; }
+  .val-low::before    { content: '✓ '; }
+}
+
+/* ── Status text labels (not color-only indicators) ── */
+/* The total-value already shows text; these add screen-reader hints */
+.val-high   { /* color set in base styles */ }
+.val-medium { /* color set in base styles */ }
+.val-low    { /* color set in base styles */ }
+
+/* ── Screen-reader only utility ── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
+}

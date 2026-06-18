@@ -11,6 +11,7 @@
 
 import { EMISSION_FACTORS, getTransportFactor, getFoodFactor, getElectricityFactor } from '../data/emissionFactors.js';
 import { saveLog, loadTodayLog } from './storage.js';
+import { sanitiseLogInputs } from './validation.js';
 
 // ─────────────────────────────────────────────────────────────────
 // CALCULATION FUNCTIONS (pure — no DOM, fully unit-testable)
@@ -24,9 +25,11 @@ import { saveLog, loadTodayLog } from './storage.js';
  * @returns {number} kg CO₂e
  */
 export function calcTransportEmissions(mode, subtype, distanceKm) {
-  if (!distanceKm || distanceKm <= 0) return 0;
+  // Defensive clamp: reject negative or non-finite distances
+  const d = (isFinite(distanceKm) && distanceKm > 0) ? Math.min(distanceKm, 1000) : 0;
+  if (d <= 0) return 0;
   const factor = getTransportFactor(mode, subtype);
-  return parseFloat((factor * distanceKm).toFixed(3));
+  return parseFloat((factor * d).toFixed(3));
 }
 
 /**
@@ -40,12 +43,14 @@ export function calcTransportEmissions(mode, subtype, distanceKm) {
  */
 export function calcFoodEmissions(meatMeals, poultryMeals, vegMeals, veganMeals, deliveryOrders) {
   const f = EMISSION_FACTORS.food;
+  // Clamp all inputs: negative counts and NaN are treated as 0
+  const clamp = (v, max = 10) => (isFinite(v) && v > 0) ? Math.min(v, max) : 0;
   const total =
-    (meatMeals      || 0) * f.meal_beef +
-    (poultryMeals   || 0) * f.meal_chicken +
-    (vegMeals       || 0) * f.meal_vegetarian +
-    (veganMeals     || 0) * f.meal_vegan +
-    (deliveryOrders || 0) * f.delivery_overhead;
+    clamp(meatMeals)      * f.meal_beef +
+    clamp(poultryMeals)   * f.meal_chicken +
+    clamp(vegMeals)       * f.meal_vegetarian +
+    clamp(veganMeals)     * f.meal_vegan +
+    clamp(deliveryOrders) * f.delivery_overhead;
   return parseFloat(total.toFixed(3));
 }
 
@@ -60,15 +65,12 @@ export function calcFoodEmissions(meatMeals, poultryMeals, vegMeals, veganMeals,
 export function calcEnergyEmissions(acHours, electricityKwh, energyType, householdSize) {
   const e = EMISSION_FACTORS.energy;
   const elecFactor = getElectricityFactor(energyType || 'unsure');
-  const hh = Math.max(householdSize || 1, 1);
+  // householdSize must be at least 1; clamp to realistic range 1–20
+  const hh = (isFinite(householdSize) && householdSize >= 1) ? Math.min(Math.floor(householdSize), 20) : 1;
+  const ac  = (isFinite(acHours) && acHours > 0) ? Math.min(acHours, 24) : 0;
+  const kwh = (isFinite(electricityKwh) && electricityKwh > 0) ? Math.min(electricityKwh, 200) : 0;
 
-  let total = 0;
-  // AC/heating: 1.5 kW average unit × hours × grid intensity
-  total += (acHours || 0) * e.ac_per_hour;
-  // Direct electricity input (if user provides kWh reading)
-  total += (electricityKwh || 0) * elecFactor;
-
-  // Divide by household size to get individual share
+  let total = ac * e.ac_per_hour + kwh * elecFactor;
   return parseFloat((total / hh).toFixed(3));
 }
 
@@ -81,10 +83,11 @@ export function calcEnergyEmissions(acHours, electricityKwh, energyType, househo
  */
 export function calcConsumptionEmissions(parcels, clothingItems, electronicsSmall) {
   const c = EMISSION_FACTORS.consumption;
+  const clamp = (v, max) => (isFinite(v) && v > 0) ? Math.min(v, max) : 0;
   const total =
-    (parcels          || 0) * c.online_parcel +
-    (clothingItems    || 0) * c.clothing_item +
-    (electronicsSmall || 0) * c.electronics_small;
+    clamp(parcels, 50)          * c.online_parcel +
+    clamp(clothingItems, 50)    * c.clothing_item +
+    clamp(electronicsSmall, 20) * c.electronics_small;
   return parseFloat(total.toFixed(3));
 }
 
@@ -385,21 +388,24 @@ function _initLoggerInteractions(profile, onSubmit) {
 
 function _readFormInputs(form) {
   const fd = new FormData(form);
-  return {
-    transportMode:   fd.get('transportMode') || 'car',
-    carFuelType:     fd.get('carFuelType')   || 'petrol',
-    distanceKm:      parseFloat(fd.get('distanceKm'))     || 0,
-    meatMeals:       parseFloat(fd.get('meatMeals'))      || 0,
-    poultryMeals:    parseFloat(fd.get('poultryMeals'))   || 0,
-    vegMeals:        parseFloat(fd.get('vegMeals'))       || 0,
-    veganMeals:      parseFloat(fd.get('veganMeals'))     || 0,
-    deliveryOrders:  parseFloat(fd.get('deliveryOrders')) || 0,
-    acHours:         parseFloat(fd.get('acHours'))        || 0,
-    electricityKwh:  parseFloat(fd.get('electricityKwh')) || 0,
-    parcels:         parseFloat(fd.get('parcels'))        || 0,
-    clothingItems:   parseFloat(fd.get('clothingItems'))  || 0,
-    electronicsSmall:parseFloat(fd.get('electronicsSmall'))|| 0,
+  // Read raw values, then pass through the validation/sanitisation layer
+  const raw = {
+    transportMode:    fd.get('transportMode') || 'car',
+    carFuelType:      fd.get('carFuelType')   || 'petrol',
+    distanceKm:       parseFloat(fd.get('distanceKm'))      || 0,
+    meatMeals:        parseFloat(fd.get('meatMeals'))       || 0,
+    poultryMeals:     parseFloat(fd.get('poultryMeals'))    || 0,
+    vegMeals:         parseFloat(fd.get('vegMeals'))        || 0,
+    veganMeals:       parseFloat(fd.get('veganMeals'))      || 0,
+    deliveryOrders:   parseFloat(fd.get('deliveryOrders'))  || 0,
+    acHours:          parseFloat(fd.get('acHours'))         || 0,
+    electricityKwh:   parseFloat(fd.get('electricityKwh'))  || 0,
+    parcels:          parseFloat(fd.get('parcels'))         || 0,
+    clothingItems:    parseFloat(fd.get('clothingItems'))   || 0,
+    electronicsSmall: parseFloat(fd.get('electronicsSmall'))|| 0,
   };
+  // Sanitise all inputs — rejects nonsensical values (negatives, strings, out-of-range)
+  return sanitiseLogInputs(raw);
 }
 
 function _updateLiveCalcs(profile) {
