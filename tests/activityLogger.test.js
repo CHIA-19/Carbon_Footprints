@@ -1,6 +1,6 @@
-﻿import test from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert';
-import { calcTransportEmissions, calcFoodEmissions, calcEnergyEmissions, calcConsumptionEmissions } from '../src/scripts/activityLogger.js';
+import { calcTransportEmissions, calcFoodEmissions, calcEnergyEmissions, calcConsumptionEmissions, calculateDayTotals } from '../src/scripts/activityLogger.js';
 
 test('Transport Emissions Calculation', async (t) => {
   await t.test('calculates correct car transport with distance', () => {
@@ -60,5 +60,24 @@ test('Consumption Emissions Calculation', async (t) => {
     const res = calcConsumptionEmissions(2, 1, 1);
     // 2*0.5 + 1*20 + 1*30 = 51
     assert.strictEqual(res, 51);
+  });
+});
+
+test('Total Day Calculation', async (t) => {
+  await t.test('aggregates all categories correctly', () => {
+    const inputs = {
+      transportMode: 'car', carFuelType: 'petrol', distanceKm: 10,
+      shortFlightKm: 0, longFlightKm: 0,
+      meatMeals: 1, poultryMeals: 1, vegMeals: 1, veganMeals: 1, deliveryOrders: 0,
+      acHours: 0, electricityKwh: 10, energyType: 'grid',
+      parcels: 2, clothingItems: 1, electronicsSmall: 1, note: ''
+    };
+    const profile = { householdSize: 1, country: null };
+    const res = calculateDayTotals(inputs, profile);
+    
+    // car (1.7) + food (8.9) + energy (4.36) + cons (51) = 65.96
+    assert.strictEqual(res.total, 65.96);
+    assert.strictEqual(res.transport, 1.7);
+    assert.strictEqual(res.food, 8.9);
   });
 });

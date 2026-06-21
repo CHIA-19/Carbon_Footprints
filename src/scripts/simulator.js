@@ -7,8 +7,11 @@
  * All calculations use the same emission factors as the main logger â€” fully auditable.
  */
 
-import { EMISSION_FACTORS, getTransportFactor } from '../data/emissionFactors.js';
-import { loadRecentLogs } from './storage.js';
+import {
+  EMISSION_FACTORS,
+  getTransportFactor,
+} from "../data/emissionFactors.js";
+import { loadRecentLogs } from "./storage.js";
 
 // â”€â”€â”€ Baseline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -23,18 +26,23 @@ function _getDailyBaseline(profile) {
   if (logs.length >= 3) {
     const n = logs.length;
     return {
-      transport:   logs.reduce((s, l) => s + (l.totals?.transport   || 0), 0) / n,
-      food:        logs.reduce((s, l) => s + (l.totals?.food        || 0), 0) / n,
-      energy:      logs.reduce((s, l) => s + (l.totals?.energy      || 0), 0) / n,
-      consumption: logs.reduce((s, l) => s + (l.totals?.consumption || 0), 0) / n,
-      total:       logs.reduce((s, l) => s + (l.totals?.total       || 0), 0) / n,
+      transport: logs.reduce((s, l) => s + (l.totals?.transport || 0), 0) / n,
+      food: logs.reduce((s, l) => s + (l.totals?.food || 0), 0) / n,
+      energy: logs.reduce((s, l) => s + (l.totals?.energy || 0), 0) / n,
+      consumption:
+        logs.reduce((s, l) => s + (l.totals?.consumption || 0), 0) / n,
+      total: logs.reduce((s, l) => s + (l.totals?.total || 0), 0) / n,
       source: `your last ${n} logged days`,
     };
   }
   const g = EMISSION_FACTORS.baselines.global_avg_daily_kg;
   return {
-    transport:   g * 0.27, food: g * 0.26, energy: g * 0.32, consumption: g * 0.15, total: g,
-    source: 'global average (log more days for your personalised figure)',
+    transport: g * 0.27,
+    food: g * 0.26,
+    energy: g * 0.32,
+    consumption: g * 0.15,
+    total: g,
+    source: "global average (log more days for your personalised figure)",
   };
 }
 
@@ -45,25 +53,26 @@ function _getDailyBaseline(profile) {
  * @param {Object} profile - The user's baseline profile containing country and household size
  */
 export function renderSimulator(profile) {
-  const section = document.getElementById('simulator-section');
+  const section = document.getElementById("simulator-section");
   if (!section) return;
 
   const daily = _getDailyBaseline(profile);
   const annual = {
-    transport:   daily.transport   * 365,
-    food:        daily.food        * 365,
-    energy:      daily.energy      * 365,
+    transport: daily.transport * 365,
+    food: daily.food * 365,
+    energy: daily.energy * 365,
     consumption: daily.consumption * 365,
-    total:       daily.total       * 365,
+    total: daily.total * 365,
   };
 
   // Country-aware grid intensity for energy scenario
-  const country    = profile?.country || 'world_avg';
-  const gridData   = EMISSION_FACTORS.gridIntensityByCountry?.[country];
+  const country = profile?.country || "world_avg";
+  const gridData = EMISSION_FACTORS.gridIntensityByCountry?.[country];
   const gridFactor = gridData?.kg ?? EMISSION_FACTORS.energy.electricity_grid;
-  const renewFactor= EMISSION_FACTORS.energy.electricity_renewable;
-  const hhSize     = Math.max(1, profile?.householdSize || 1);
-  const annualKwh  = (EMISSION_FACTORS.energy.typical_home_daily_kwh * 365) / hhSize;
+  const renewFactor = EMISSION_FACTORS.energy.electricity_renewable;
+  const hhSize = Math.max(1, profile?.householdSize || 1);
+  const annualKwh =
+    (EMISSION_FACTORS.energy.typical_home_daily_kwh * 365) / hhSize;
   const energySaving = Math.max(0, (gridFactor - renewFactor) * annualKwh);
 
   section.innerHTML = `
@@ -172,7 +181,7 @@ export function renderSimulator(profile) {
             <div>
               <h4 class="sim-scenario-title">Switch to renewable electricity</h4>
               <p class="sim-scenario-sub-text">
-                Your grid (${gridData?.label ?? 'world avg'}): <strong>${gridFactor.toFixed(3)} kg/kWh</strong> â†’
+                Your grid (${gridData?.label ?? "world avg"}): <strong>${gridFactor.toFixed(3)} kg/kWh</strong> â†’
                 Renewable: <strong>${renewFactor} kg/kWh</strong>
               </p>
             </div>
@@ -254,97 +263,132 @@ function _initSimulatorEvents(annual, energySaving) {
   function _setEquiv(id, kg) {
     const el = document.getElementById(id);
     if (!el) return;
-    if (kg <= 0) { el.textContent = ''; return; }
-    const km   = (kg * EMISSION_FACTORS.baselines.car_km_per_kg_co2).toFixed(0);
-    const trees = Math.round(kg / EMISSION_FACTORS.baselines.tree_offset_kg_year);
-    el.textContent = `â‰ˆ not driving ${km} km Â· like ${trees} tree${trees !== 1 ? 's' : ''} absorbing for a year`;
+    if (kg <= 0) {
+      el.textContent = "";
+      return;
+    }
+    const km = (kg * EMISSION_FACTORS.baselines.car_km_per_kg_co2).toFixed(0);
+    const trees = Math.round(
+      kg / EMISSION_FACTORS.baselines.tree_offset_kg_year,
+    );
+    el.textContent = `â‰ˆ not driving ${km} km Â· like ${trees} tree${trees !== 1 ? "s" : ""} absorbing for a year`;
   }
 
   function _updateTotal() {
     const total = Object.values(savings).reduce((s, v) => s + v, 0);
-    const el    = document.getElementById('sim-grand-total');
-    const barEl = document.getElementById('sim-total-bar');
-    const noteEl= document.getElementById('sim-total-note');
+    const el = document.getElementById("sim-grand-total");
+    const barEl = document.getElementById("sim-total-bar");
+    const noteEl = document.getElementById("sim-total-note");
     if (el) el.textContent = total.toFixed(0);
-    if (barEl) barEl.style.width = annual.total > 0 ? Math.min(100, (total / annual.total) * 100) + '%' : '0%';
+    if (barEl)
+      barEl.style.width =
+        annual.total > 0
+          ? Math.min(100, (total / annual.total) * 100) + "%"
+          : "0%";
     if (noteEl && total > 0) {
-      const pct   = ((total / annual.total) * 100).toFixed(0);
-      const trees = Math.round(total / EMISSION_FACTORS.baselines.tree_offset_kg_year);
+      const pct = ((total / annual.total) * 100).toFixed(0);
+      const trees = Math.round(
+        total / EMISSION_FACTORS.baselines.tree_offset_kg_year,
+      );
       noteEl.textContent = `That's a ${pct}% reduction from your estimated footprint â€” like planting ${trees} trees ðŸŒ³`;
     }
   }
 
   // â”€â”€ Diet slider â”€â”€
-  document.getElementById('diet-slider')?.addEventListener('input', e => {
+  document.getElementById("diet-slider")?.addEventListener("input", (e) => {
     const meals = +e.target.value;
-    document.getElementById('diet-val').textContent = meals;
-    savings.diet = meals * 52 * (EMISSION_FACTORS.food.meal_beef - EMISSION_FACTORS.food.meal_vegan);
-    document.getElementById('diet-saving').textContent = savings.diet.toFixed(0);
-    _setEquiv('diet-equiv', savings.diet);
+    document.getElementById("diet-val").textContent = meals;
+    savings.diet =
+      meals *
+      52 *
+      (EMISSION_FACTORS.food.meal_beef - EMISSION_FACTORS.food.meal_vegan);
+    document.getElementById("diet-saving").textContent =
+      savings.diet.toFixed(0);
+    _setEquiv("diet-equiv", savings.diet);
     _updateTotal();
   });
-  document.getElementById('diet-slider')?.dispatchEvent(new Event('input'));
+  document.getElementById("diet-slider")?.dispatchEvent(new Event("input"));
 
   // â”€â”€ WFH slider â”€â”€
-  document.getElementById('wfh-slider')?.addEventListener('input', e => {
+  document.getElementById("wfh-slider")?.addEventListener("input", (e) => {
     const days = +e.target.value;
-    document.getElementById('wfh-val').textContent = days;
+    document.getElementById("wfh-val").textContent = days;
     // Commute â‰ˆ 1/5 of weekly transport; cap at annual total
     savings.wfh = Math.min(annual.transport, (annual.transport / 5) * days);
-    document.getElementById('wfh-saving').textContent = savings.wfh.toFixed(0);
-    _setEquiv('wfh-equiv', savings.wfh);
+    document.getElementById("wfh-saving").textContent = savings.wfh.toFixed(0);
+    _setEquiv("wfh-equiv", savings.wfh);
     _updateTotal();
   });
-  document.getElementById('wfh-slider')?.dispatchEvent(new Event('input'));
+  document.getElementById("wfh-slider")?.dispatchEvent(new Event("input"));
 
   // â”€â”€ Transport switch slider + select â”€â”€
   function _calcTransportSaving() {
-    const pct        = +(document.getElementById('transport-slider')?.value || 0) / 100;
-    const targetMode = document.getElementById('transport-target')?.value || 'ev';
-    document.getElementById('transport-val').textContent = Math.round(pct * 100);
-    const oldFactor  = getTransportFactor('car', 'petrol');
-    const newFactor  = getTransportFactor(targetMode);
-    const reduction  = oldFactor > 0 ? Math.max(0, 1 - newFactor / oldFactor) : 0;
+    const pct =
+      +(document.getElementById("transport-slider")?.value || 0) / 100;
+    const targetMode =
+      document.getElementById("transport-target")?.value || "ev";
+    document.getElementById("transport-val").textContent = Math.round(
+      pct * 100,
+    );
+    const oldFactor = getTransportFactor("car", "petrol");
+    const newFactor = getTransportFactor(targetMode);
+    const reduction =
+      oldFactor > 0 ? Math.max(0, 1 - newFactor / oldFactor) : 0;
     savings.transport = annual.transport * pct * reduction;
-    document.getElementById('transport-saving').textContent = savings.transport.toFixed(0);
-    _setEquiv('transport-equiv', savings.transport);
+    document.getElementById("transport-saving").textContent =
+      savings.transport.toFixed(0);
+    _setEquiv("transport-equiv", savings.transport);
     _updateTotal();
   }
-  document.getElementById('transport-slider')?.addEventListener('input', _calcTransportSaving);
-  document.getElementById('transport-target')?.addEventListener('change', _calcTransportSaving);
+  document
+    .getElementById("transport-slider")
+    ?.addEventListener("input", _calcTransportSaving);
+  document
+    .getElementById("transport-target")
+    ?.addEventListener("change", _calcTransportSaving);
   _calcTransportSaving();
 
   // â”€â”€ Energy toggle â”€â”€
-  document.getElementById('energy-renew-btn')?.addEventListener('click', () => {
-    document.getElementById('energy-renew-btn')?.classList.add('active');
-    document.getElementById('energy-renew-btn')?.setAttribute('aria-pressed', 'true');
-    document.getElementById('energy-grid-btn')?.classList.remove('active');
-    document.getElementById('energy-grid-btn')?.setAttribute('aria-pressed', 'false');
+  document.getElementById("energy-renew-btn")?.addEventListener("click", () => {
+    document.getElementById("energy-renew-btn")?.classList.add("active");
+    document
+      .getElementById("energy-renew-btn")
+      ?.setAttribute("aria-pressed", "true");
+    document.getElementById("energy-grid-btn")?.classList.remove("active");
+    document
+      .getElementById("energy-grid-btn")
+      ?.setAttribute("aria-pressed", "false");
     savings.energy = energySaving;
-    document.getElementById('energy-saving').textContent = energySaving.toFixed(0);
-    _setEquiv('energy-equiv', energySaving);
+    document.getElementById("energy-saving").textContent =
+      energySaving.toFixed(0);
+    _setEquiv("energy-equiv", energySaving);
     _updateTotal();
   });
-  document.getElementById('energy-grid-btn')?.addEventListener('click', () => {
-    document.getElementById('energy-grid-btn')?.classList.add('active');
-    document.getElementById('energy-grid-btn')?.setAttribute('aria-pressed', 'true');
-    document.getElementById('energy-renew-btn')?.classList.remove('active');
-    document.getElementById('energy-renew-btn')?.setAttribute('aria-pressed', 'false');
+  document.getElementById("energy-grid-btn")?.addEventListener("click", () => {
+    document.getElementById("energy-grid-btn")?.classList.add("active");
+    document
+      .getElementById("energy-grid-btn")
+      ?.setAttribute("aria-pressed", "true");
+    document.getElementById("energy-renew-btn")?.classList.remove("active");
+    document
+      .getElementById("energy-renew-btn")
+      ?.setAttribute("aria-pressed", "false");
     savings.energy = 0;
-    document.getElementById('energy-saving').textContent = '0';
-    document.getElementById('energy-equiv').textContent = 'Toggle to renewable above to see your potential saving';
+    document.getElementById("energy-saving").textContent = "0";
+    document.getElementById("energy-equiv").textContent =
+      "Toggle to renewable above to see your potential saving";
     _updateTotal();
   });
 
   // â”€â”€ Delivery slider â”€â”€
-  document.getElementById('delivery-slider')?.addEventListener('input', e => {
+  document.getElementById("delivery-slider")?.addEventListener("input", (e) => {
     const pct = +e.target.value / 100;
-    document.getElementById('delivery-val').textContent = e.target.value;
+    document.getElementById("delivery-val").textContent = e.target.value;
     savings.delivery = annual.consumption * pct;
-    document.getElementById('delivery-saving').textContent = savings.delivery.toFixed(0);
-    _setEquiv('delivery-equiv', savings.delivery);
+    document.getElementById("delivery-saving").textContent =
+      savings.delivery.toFixed(0);
+    _setEquiv("delivery-equiv", savings.delivery);
     _updateTotal();
   });
-  document.getElementById('delivery-slider')?.dispatchEvent(new Event('input'));
+  document.getElementById("delivery-slider")?.dispatchEvent(new Event("input"));
 }
-

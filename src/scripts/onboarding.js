@@ -14,24 +14,29 @@
  *   6. Household size
  */
 
-import { saveProfile, markOnboardingComplete } from './storage.js';
-import { EMISSION_FACTORS } from '../data/emissionFactors.js';
+import { saveProfile, markOnboardingComplete } from "./storage.js";
+import { EMISSION_FACTORS } from "../data/emissionFactors.js";
 
 /**
  * Render the onboarding overlay and handle profile collection.
  * @param {Function} onComplete â€” called with the saved profile when done
  */
 export function renderOnboarding(onComplete) {
-  const overlay = document.getElementById('onboarding-overlay');
+  const overlay = document.getElementById("onboarding-overlay");
   if (!overlay) return;
 
   // Build country options from emissionFactors data
-  const countryEntries = Object.entries(EMISSION_FACTORS.gridIntensityByCountry || {});
-  const countryOptions = countryEntries.map(([key, val]) =>
-    `<button class="option-btn country-btn" data-value="${key}">${val.label}<small>${val.kg} kg/kWh</small></button>`
-  ).join('');
+  const countryEntries = Object.entries(
+    EMISSION_FACTORS.gridIntensityByCountry || {},
+  );
+  const countryOptions = countryEntries
+    .map(
+      ([key, val]) =>
+        `<button class="option-btn country-btn" data-value="${key}">${val.label}<small>${val.kg} kg/kWh</small></button>`,
+    )
+    .join("");
 
-  overlay.classList.remove('hidden');
+  overlay.classList.remove("hidden");
   overlay.innerHTML = `
     <div class="onboarding-card glass-card" role="dialog" aria-labelledby="ob-title">
       <div class="onboarding-logo">
@@ -152,85 +157,103 @@ export function renderOnboarding(onComplete) {
 
 function _initOnboardingInteractions(overlay, onComplete) {
   const state = {
-    name: '', commuteMode: '', carFuelType: 'petrol',
-    dietPattern: '', energyType: '', country: 'world_avg', householdSize: 1,
+    name: "",
+    commuteMode: "",
+    carFuelType: "petrol",
+    dietPattern: "",
+    energyType: "",
+    country: "world_avg",
+    householdSize: 1,
   };
 
   // Step 1 â†’ 2
-  document.getElementById('ob-next-1')?.addEventListener('click', () => {
-    state.name = (document.getElementById('ob-name')?.value || '').trim();
+  document.getElementById("ob-next-1")?.addEventListener("click", () => {
+    state.name = (document.getElementById("ob-name")?.value || "").trim();
     _goto(1, 2);
   });
-  document.getElementById('ob-name')?.addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('ob-next-1')?.click();
+  document.getElementById("ob-name")?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("ob-next-1")?.click();
   });
 
   // Step 2: commute mode
-  _initOptionGrid('ob-commute-options', val => {
+  _initOptionGrid("ob-commute-options", (val) => {
     state.commuteMode = val;
-    document.getElementById('ob-next-2').disabled = false;
-    const isCar = ['car', 'rideshare'].includes(val);
-    document.getElementById('ob-car-fuel-wrap').classList.toggle('hidden', !isCar);
+    document.getElementById("ob-next-2").disabled = false;
+    const isCar = ["car", "rideshare"].includes(val);
+    document
+      .getElementById("ob-car-fuel-wrap")
+      .classList.toggle("hidden", !isCar);
   });
-  document.getElementById('ob-car-fuel')?.addEventListener('change', e => { state.carFuelType = e.target.value; });
-  document.getElementById('ob-next-2')?.addEventListener('click', () => _goto(2, 3));
+  document.getElementById("ob-car-fuel")?.addEventListener("change", (e) => {
+    state.carFuelType = e.target.value;
+  });
+  document
+    .getElementById("ob-next-2")
+    ?.addEventListener("click", () => _goto(2, 3));
 
   // Step 3: diet
-  _initOptionGrid('ob-diet-options', val => {
+  _initOptionGrid("ob-diet-options", (val) => {
     state.dietPattern = val;
-    document.getElementById('ob-next-3').disabled = false;
+    document.getElementById("ob-next-3").disabled = false;
   });
-  document.getElementById('ob-next-3')?.addEventListener('click', () => _goto(3, 4));
+  document
+    .getElementById("ob-next-3")
+    ?.addEventListener("click", () => _goto(3, 4));
 
   // Step 4: energy type
-  _initOptionGrid('ob-energy-options', val => {
+  _initOptionGrid("ob-energy-options", (val) => {
     state.energyType = val;
-    document.getElementById('ob-next-4').disabled = false;
+    document.getElementById("ob-next-4").disabled = false;
   });
-  document.getElementById('ob-next-4')?.addEventListener('click', () => _goto(4, 5));
+  document
+    .getElementById("ob-next-4")
+    ?.addEventListener("click", () => _goto(4, 5));
 
   // Step 5: country
-  _initOptionGrid('ob-country-options', val => {
+  _initOptionGrid("ob-country-options", (val) => {
     state.country = val;
-    document.getElementById('ob-next-5').disabled = false;
+    document.getElementById("ob-next-5").disabled = false;
   });
-  document.getElementById('ob-next-5')?.addEventListener('click', () => _goto(5, 6));
+  document
+    .getElementById("ob-next-5")
+    ?.addEventListener("click", () => _goto(5, 6));
 
   // Step 6: household size
   let hh = 1;
-  document.getElementById('hh-inc')?.addEventListener('click', () => {
+  document.getElementById("hh-inc")?.addEventListener("click", () => {
     hh = Math.min(10, hh + 1);
-    document.getElementById('hh-count').textContent = hh;
+    document.getElementById("hh-count").textContent = hh;
   });
-  document.getElementById('hh-dec')?.addEventListener('click', () => {
+  document.getElementById("hh-dec")?.addEventListener("click", () => {
     hh = Math.max(1, hh - 1);
-    document.getElementById('hh-count').textContent = hh;
+    document.getElementById("hh-count").textContent = hh;
   });
 
   // Finish
-  document.getElementById('ob-finish')?.addEventListener('click', () => {
+  document.getElementById("ob-finish")?.addEventListener("click", () => {
     state.householdSize = hh;
     const profile = { ...state };
     saveProfile(profile);
     markOnboardingComplete();
-    overlay.classList.add('hidden');
+    overlay.classList.add("hidden");
     onComplete?.(profile);
   });
 }
 
 function _goto(from, to) {
-  document.getElementById(`ob-step-${from}`)?.classList.add('hidden');
-  document.getElementById(`ob-step-${to}`)?.classList.remove('hidden');
+  document.getElementById(`ob-step-${from}`)?.classList.add("hidden");
+  document.getElementById(`ob-step-${to}`)?.classList.remove("hidden");
 }
 
 function _initOptionGrid(gridId, onSelect) {
   const grid = document.getElementById(gridId);
-  grid?.querySelectorAll('.option-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      grid.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
+  grid?.querySelectorAll(".option-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      grid
+        .querySelectorAll(".option-btn")
+        .forEach((b) => b.classList.remove("selected"));
+      btn.classList.add("selected");
       onSelect(btn.dataset.value);
     });
   });
 }
-

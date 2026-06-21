@@ -6,12 +6,12 @@
  * Uses Chart.js (loaded via CDN in index.html).
  */
 
-import { EMISSION_FACTORS } from '../data/emissionFactors.js';
-import { loadAllLogs, loadRecentLogs, loadGoal, saveGoal } from './storage.js';
-import { generateGoalNudge } from './insightsEngine.js';
+import { EMISSION_FACTORS } from "../data/emissionFactors.js";
+import { loadAllLogs, loadRecentLogs, loadGoal, saveGoal } from "./storage.js";
+import { generateGoalNudge } from "./insightsEngine.js";
 
 let weeklyChartInstance = null;
-let donutChartInstance  = null;
+let donutChartInstance = null;
 
 // â”€â”€â”€ MAIN RENDER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -20,12 +20,12 @@ let donutChartInstance  = null;
  * @param {Object} profile â€” user baseline profile
  */
 export function renderDashboard(profile) {
-  const section = document.getElementById('dashboard-section');
+  const section = document.getElementById("dashboard-section");
   if (!section) return;
 
   const weekLogs = loadRecentLogs(7);
-  const allLogs  = loadAllLogs();
-  const goal     = loadGoal();
+  const allLogs = loadAllLogs();
+  const goal = loadGoal();
 
   weeklyChartInstance?.destroy();
   donutChartInstance?.destroy();
@@ -76,9 +76,10 @@ export function renderDashboard(profile) {
             <button class="chart-period-btn" id="chart-30d-btn" aria-pressed="false">30 days</button>
           </div>
         </div>
-        ${weekLogs.length === 0
-          ? '<p class="empty-state">Log a day to see your chart!</p>'
-          : '<div class="chart-wrap"><canvas id="weekly-chart"></canvas></div>'
+        ${
+          weekLogs.length === 0
+            ? '<p class="empty-state">Log a day to see your chart!</p>'
+            : '<div class="chart-wrap"><canvas id="weekly-chart"></canvas></div>'
         }
         <div class="chart-legend">
           <span class="legend-dot" style="background:#ff6b6b"></span> Global avg (${EMISSION_FACTORS.baselines.global_avg_daily_kg} kg)
@@ -90,9 +91,10 @@ export function renderDashboard(profile) {
       <!-- â”€â”€ Category donut â”€â”€ -->
       <div class="dash-card glass-card">
         <h3 class="dash-card-title">ðŸ© Breakdown by Category</h3>
-        ${weekLogs.length === 0
-          ? '<p class="empty-state">Log a day to see your breakdown!</p>'
-          : `<div class="chart-wrap donut-wrap">
+        ${
+          weekLogs.length === 0
+            ? '<p class="empty-state">Log a day to see your breakdown!</p>'
+            : `<div class="chart-wrap donut-wrap">
               <canvas id="donut-chart"></canvas>
               <div class="donut-centre">
                 <span class="donut-total">${stats.weekTotal.toFixed(1)}</span>
@@ -143,45 +145,59 @@ export function renderDashboard(profile) {
   }
 
   // â”€â”€ Goal slider â”€â”€
-  const goalSlider = document.getElementById('goal-slider');
-  goalSlider?.addEventListener('input', () => {
+  const goalSlider = document.getElementById("goal-slider");
+  goalSlider?.addEventListener("input", () => {
     const pct = parseInt(goalSlider.value);
-    document.getElementById('goal-pct-display').textContent = `${pct}%`;
-    document.getElementById('goal-target-preview').textContent = `Target: â‰¤ ${_computeTargetKg(pct).toFixed(1)} kg/day`;
+    document.getElementById("goal-pct-display").textContent = `${pct}%`;
+    document.getElementById("goal-target-preview").textContent =
+      `Target: â‰¤ ${_computeTargetKg(pct).toFixed(1)} kg/day`;
   });
-  document.getElementById('save-goal-btn')?.addEventListener('click', () => {
+  document.getElementById("save-goal-btn")?.addEventListener("click", () => {
     const pct = parseInt(goalSlider.value);
     saveGoal(pct);
-    const btn = document.getElementById('save-goal-btn');
-    btn.textContent = 'âœ“ Saved!';
-    btn.classList.add('btn-saved');
-    setTimeout(() => { btn.textContent = 'Save Goal'; btn.classList.remove('btn-saved'); }, 2000);
+    const btn = document.getElementById("save-goal-btn");
+    btn.textContent = "âœ“ Saved!";
+    btn.classList.add("btn-saved");
+    setTimeout(() => {
+      btn.textContent = "Save Goal";
+      btn.classList.remove("btn-saved");
+    }, 2000);
     renderDashboard(profile);
   });
 
   // â”€â”€ 7d / 30d toggle â”€â”€
-  document.getElementById('chart-7d-btn')?.addEventListener('click', () => {
-    document.getElementById('chart-7d-btn').classList.add('active');
-    document.getElementById('chart-7d-btn').setAttribute('aria-pressed', 'true');
-    document.getElementById('chart-30d-btn').classList.remove('active');
-    document.getElementById('chart-30d-btn').setAttribute('aria-pressed', 'false');
+  document.getElementById("chart-7d-btn")?.addEventListener("click", () => {
+    document.getElementById("chart-7d-btn").classList.add("active");
+    document
+      .getElementById("chart-7d-btn")
+      .setAttribute("aria-pressed", "true");
+    document.getElementById("chart-30d-btn").classList.remove("active");
+    document
+      .getElementById("chart-30d-btn")
+      .setAttribute("aria-pressed", "false");
     weeklyChartInstance?.destroy();
     _renderWeeklyChart(loadRecentLogs(7));
   });
-  document.getElementById('chart-30d-btn')?.addEventListener('click', () => {
-    document.getElementById('chart-30d-btn').classList.add('active');
-    document.getElementById('chart-30d-btn').setAttribute('aria-pressed', 'true');
-    document.getElementById('chart-7d-btn').classList.remove('active');
-    document.getElementById('chart-7d-btn').setAttribute('aria-pressed', 'false');
+  document.getElementById("chart-30d-btn")?.addEventListener("click", () => {
+    document.getElementById("chart-30d-btn").classList.add("active");
+    document
+      .getElementById("chart-30d-btn")
+      .setAttribute("aria-pressed", "true");
+    document.getElementById("chart-7d-btn").classList.remove("active");
+    document
+      .getElementById("chart-7d-btn")
+      .setAttribute("aria-pressed", "false");
     weeklyChartInstance?.destroy();
     _renderWeeklyChart(loadRecentLogs(30));
   });
 
   // â”€â”€ Methodology link â”€â”€
-  document.getElementById('open-methodology-link')?.addEventListener('click', e => {
-    e.preventDefault();
-    window.showMethodologyModal?.();
-  });
+  document
+    .getElementById("open-methodology-link")
+    ?.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.showMethodologyModal?.();
+    });
 }
 
 // â”€â”€â”€ CHART RENDERERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -191,54 +207,87 @@ export function renderDashboard(profile) {
  * @param {Array} logs - Array of daily log objects
  */
 function _renderWeeklyChart(logs) {
-  const ctx = document.getElementById('weekly-chart')?.getContext('2d');
+  const ctx = document.getElementById("weekly-chart")?.getContext("2d");
   if (!ctx || logs.length === 0) return;
 
-  const labels = logs.map(l => {
-    const d = new Date(l.date + 'T12:00:00');
-    return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  const labels = logs.map((l) => {
+    const d = new Date(l.date + "T12:00:00");
+    return d.toLocaleDateString("en-GB", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    });
   });
-  const data = logs.map(l => l.totals?.total || 0);
+  const data = logs.map((l) => l.totals?.total || 0);
 
   weeklyChartInstance = new Chart(ctx, {
-    type: 'bar',
+    type: "bar",
     data: {
       labels,
-      datasets: [{
-        label: 'Daily COâ‚‚e (kg)',
-        data,
-        backgroundColor: data.map(v =>
-          v > EMISSION_FACTORS.baselines.global_avg_daily_kg  ? 'rgba(255,107,107,0.7)'
-          : v > EMISSION_FACTORS.baselines.paris_target_daily_kg ? 'rgba(255,193,7,0.7)'
-          : 'rgba(18,217,138,0.7)'
-        ),
-        borderColor: data.map(v =>
-          v > EMISSION_FACTORS.baselines.global_avg_daily_kg  ? '#ff6b6b'
-          : v > EMISSION_FACTORS.baselines.paris_target_daily_kg ? '#ffc107'
-          : '#12d98a'
-        ),
-        borderWidth: 1,
-        borderRadius: 6,
-      }]
+      datasets: [
+        {
+          label: "Daily COâ‚‚e (kg)",
+          data,
+          backgroundColor: data.map((v) =>
+            v > EMISSION_FACTORS.baselines.global_avg_daily_kg
+              ? "rgba(255,107,107,0.7)"
+              : v > EMISSION_FACTORS.baselines.paris_target_daily_kg
+                ? "rgba(255,193,7,0.7)"
+                : "rgba(18,217,138,0.7)",
+          ),
+          borderColor: data.map((v) =>
+            v > EMISSION_FACTORS.baselines.global_avg_daily_kg
+              ? "#ff6b6b"
+              : v > EMISSION_FACTORS.baselines.paris_target_daily_kg
+                ? "#ffc107"
+                : "#12d98a",
+          ),
+          borderWidth: 1,
+          borderRadius: 6,
+        },
+      ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: c => `~ ${c.parsed.y.toFixed(1)} kg COâ‚‚e` } },
+        tooltip: {
+          callbacks: { label: (c) => `~ ${c.parsed.y.toFixed(1)} kg COâ‚‚e` },
+        },
         annotation: {
           annotations: {
-            parisLine: { type: 'line', yMin: EMISSION_FACTORS.baselines.paris_target_daily_kg, yMax: EMISSION_FACTORS.baselines.paris_target_daily_kg, borderColor: '#12d98a', borderWidth: 1, borderDash: [6,4] },
-            globalLine: { type: 'line', yMin: EMISSION_FACTORS.baselines.global_avg_daily_kg, yMax: EMISSION_FACTORS.baselines.global_avg_daily_kg, borderColor: '#ff6b6b', borderWidth: 1, borderDash: [6,4] },
-          }
-        }
+            parisLine: {
+              type: "line",
+              yMin: EMISSION_FACTORS.baselines.paris_target_daily_kg,
+              yMax: EMISSION_FACTORS.baselines.paris_target_daily_kg,
+              borderColor: "#12d98a",
+              borderWidth: 1,
+              borderDash: [6, 4],
+            },
+            globalLine: {
+              type: "line",
+              yMin: EMISSION_FACTORS.baselines.global_avg_daily_kg,
+              yMax: EMISSION_FACTORS.baselines.global_avg_daily_kg,
+              borderColor: "#ff6b6b",
+              borderWidth: 1,
+              borderDash: [6, 4],
+            },
+          },
+        },
       },
       scales: {
-        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.07)' }, ticks: { color: '#a0aec0', callback: v => `${v} kg` } },
-        x: { grid: { display: false }, ticks: { color: '#a0aec0', maxRotation: 45 } },
-      }
-    }
+        y: {
+          beginAtZero: true,
+          grid: { color: "rgba(255,255,255,0.07)" },
+          ticks: { color: "#a0aec0", callback: (v) => `${v} kg` },
+        },
+        x: {
+          grid: { display: false },
+          ticks: { color: "#a0aec0", maxRotation: 45 },
+        },
+      },
+    },
   });
 }
 
@@ -247,14 +296,42 @@ function _renderWeeklyChart(logs) {
  * @param {Object} categoryTotals - Object containing transport, food, energy, consumption totals
  */
 function _renderDonutChart(categoryTotals) {
-  const ctx = document.getElementById('donut-chart')?.getContext('2d');
+  const ctx = document.getElementById("donut-chart")?.getContext("2d");
   if (!ctx) return;
-  const data   = [categoryTotals.transport, categoryTotals.food, categoryTotals.energy, categoryTotals.consumption];
-  const colors = ['#4ecdc4', '#ffd93d', '#ff6b6b', '#a78bfa'];
+  const data = [
+    categoryTotals.transport,
+    categoryTotals.food,
+    categoryTotals.energy,
+    categoryTotals.consumption,
+  ];
+  const colors = ["#4ecdc4", "#ffd93d", "#ff6b6b", "#a78bfa"];
   donutChartInstance = new Chart(ctx, {
-    type: 'doughnut',
-    data: { labels: ['Transport','Food','Energy','Shopping'], datasets: [{ data, backgroundColor: colors.map(c => c+'cc'), borderColor: colors, borderWidth: 2, hoverOffset: 8 }] },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.label}: ~ ${c.parsed.toFixed(1)} kg COâ‚‚e` } } } }
+    type: "doughnut",
+    data: {
+      labels: ["Transport", "Food", "Energy", "Shopping"],
+      datasets: [
+        {
+          data,
+          backgroundColor: colors.map((c) => c + "cc"),
+          borderColor: colors,
+          borderWidth: 2,
+          hoverOffset: 8,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: "70%",
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (c) => `${c.label}: ~ ${c.parsed.toFixed(1)} kg COâ‚‚e`,
+          },
+        },
+      },
+    },
   });
 }
 
@@ -266,11 +343,11 @@ function _renderDonutChart(categoryTotals) {
  * @returns {string} HTML string for the heatmap component
  */
 function _renderHeatmap(allLogs) {
-  const today  = new Date();
+  const today = new Date();
   const logMap = {};
   for (const l of allLogs) logMap[l.date] = l;
 
-  const paris  = EMISSION_FACTORS.baselines.paris_target_daily_kg;
+  const paris = EMISSION_FACTORS.baselines.paris_target_daily_kg;
   const global = EMISSION_FACTORS.baselines.global_avg_daily_kg;
 
   // Build 84 cells (12 weeks Ã— 7 days), ending today
@@ -287,33 +364,41 @@ function _renderHeatmap(allLogs) {
   for (let w = 0; w < 12; w++) weeks.push(cells.slice(w * 7, (w + 1) * 7));
 
   function cellColor(log) {
-    if (!log) return 'rgba(255,255,255,0.06)';
+    if (!log) return "rgba(255,255,255,0.06)";
     const v = log.totals?.total || 0;
-    if (v <= paris)  return 'rgba(18,217,138,0.82)';
-    if (v <= global) return 'rgba(255,193,7,0.82)';
-    return 'rgba(255,107,107,0.82)';
+    if (v <= paris) return "rgba(18,217,138,0.82)";
+    if (v <= global) return "rgba(255,193,7,0.82)";
+    return "rgba(255,107,107,0.82)";
   }
 
-  const dayLabels = ['M','T','W','T','F','S','S'];
+  const dayLabels = ["M", "T", "W", "T", "F", "S", "S"];
 
   return `
     <div class="heatmap-wrap">
       <div class="heatmap-inner">
         <div class="heatmap-day-labels" aria-hidden="true">
-          ${dayLabels.map(d => `<span>${d}</span>`).join('')}
+          ${dayLabels.map((d) => `<span>${d}</span>`).join("")}
         </div>
         <div class="heatmap-grid" role="img" aria-label="12-week activity heatmap showing daily emissions">
-          ${weeks.map(week => `
+          ${weeks
+            .map(
+              (week) => `
             <div class="heatmap-col">
-              ${week.map(cell => `
+              ${week
+                .map(
+                  (cell) => `
                 <div class="heatmap-cell"
                      style="background:${cellColor(cell.log)}"
-                     title="${cell.dateStr}${cell.log ? ': ~' + (cell.log.totals?.total || 0).toFixed(1) + ' kg COâ‚‚e' + (cell.log.note ? ' Â· ' + cell.log.note : '') : ' (no log)'}"
-                     aria-label="${cell.dateStr}${cell.log ? ': ~' + (cell.log.totals?.total || 0).toFixed(1) + ' kg COâ‚‚e' + (cell.log.note ? ' Â· ' + cell.log.note : '') : ' (no log)'}">
+                     title="${cell.dateStr}${cell.log ? ": ~" + (cell.log.totals?.total || 0).toFixed(1) + " kg COâ‚‚e" + (cell.log.note ? " Â· " + cell.log.note : "") : " (no log)"}"
+                     aria-label="${cell.dateStr}${cell.log ? ": ~" + (cell.log.totals?.total || 0).toFixed(1) + " kg COâ‚‚e" + (cell.log.note ? " Â· " + cell.log.note : "") : " (no log)"}">
                 </div>
-              `).join('')}
+              `,
+                )
+                .join("")}
             </div>
-          `).join('')}
+          `,
+            )
+            .join("")}
         </div>
       </div>
       <div class="heatmap-legend">
@@ -336,8 +421,8 @@ function _renderHeatmap(allLogs) {
  * @returns {Object} Computed statistics object
  */
 function _computeStats(weekLogs, allLogs) {
-  const cats = ['transport','food','energy','consumption'];
-  const categoryTotals = { transport:0, food:0, energy:0, consumption:0 };
+  const cats = ["transport", "food", "energy", "consumption"];
+  const categoryTotals = { transport: 0, food: 0, energy: 0, consumption: 0 };
   let weekTotal = 0;
   for (const log of weekLogs) {
     weekTotal += log.totals?.total || 0;
@@ -348,13 +433,30 @@ function _computeStats(weekLogs, allLogs) {
   const parisDailyBudget = EMISSION_FACTORS.baselines.paris_target_daily_kg;
   const globalDaily = EMISSION_FACTORS.baselines.global_avg_daily_kg;
   const vsParisDiff = dailyAvg - parisDailyBudget;
-  const vsParis = vsParisDiff > 0 ? `+${vsParisDiff.toFixed(1)} kg` : `${vsParisDiff.toFixed(1)} kg`;
-  const vsParisClass = vsParisDiff > 0 ? 'kpi-item--bad' : 'kpi-item--good';
-  const carKmEquiv   = weekTotal * EMISSION_FACTORS.baselines.car_km_per_kg_co2;
-  const treeDays     = (weekTotal / EMISSION_FACTORS.baselines.tree_offset_kg_year) * 365;
-  const phoneCharges = weekTotal * EMISSION_FACTORS.baselines.smartphone_charges_per_kg;
-  const streak       = _computeStreak(allLogs, dailyAvg > 0 ? dailyAvg : globalDaily);
-  return { weekTotal, dailyAvg, categoryTotals, vsParis, vsParisClass, carKmEquiv, treeDays, phoneCharges, streak: streak.count, streakLabel: streak.label, streakClass: streak.count > 0 ? 'kpi-item--good' : '' };
+  const vsParis =
+    vsParisDiff > 0
+      ? `+${vsParisDiff.toFixed(1)} kg`
+      : `${vsParisDiff.toFixed(1)} kg`;
+  const vsParisClass = vsParisDiff > 0 ? "kpi-item--bad" : "kpi-item--good";
+  const carKmEquiv = weekTotal * EMISSION_FACTORS.baselines.car_km_per_kg_co2;
+  const treeDays =
+    (weekTotal / EMISSION_FACTORS.baselines.tree_offset_kg_year) * 365;
+  const phoneCharges =
+    weekTotal * EMISSION_FACTORS.baselines.smartphone_charges_per_kg;
+  const streak = _computeStreak(allLogs, dailyAvg > 0 ? dailyAvg : globalDaily);
+  return {
+    weekTotal,
+    dailyAvg,
+    categoryTotals,
+    vsParis,
+    vsParisClass,
+    carKmEquiv,
+    treeDays,
+    phoneCharges,
+    streak: streak.count,
+    streakLabel: streak.label,
+    streakClass: streak.count > 0 ? "kpi-item--good" : "",
+  };
 }
 
 /**
@@ -364,15 +466,20 @@ function _computeStats(weekLogs, allLogs) {
  * @returns {Object} Object containing count and label
  */
 function _computeStreak(allLogs, benchmark) {
-  if (allLogs.length === 0) return { count: 0, label: 'days logged' };
+  if (allLogs.length === 0) return { count: 0, label: "days logged" };
   let streak = 0;
   const sorted = [...allLogs].reverse();
   for (const log of sorted) {
     if ((log.totals?.total || 0) <= benchmark) streak++;
     else break;
   }
-  if (streak === 0) return { count: allLogs.length, label: 'days logged total' };
-  return { count: streak, label: streak === 1 ? 'day under your average' : 'days under your average ðŸ”¥' };
+  if (streak === 0)
+    return { count: allLogs.length, label: "days logged total" };
+  return {
+    count: streak,
+    label:
+      streak === 1 ? "day under your average" : "days under your average ðŸ”¥",
+  };
 }
 
 // â”€â”€â”€ HELPERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -385,13 +492,13 @@ function _renderGoalBanner(weekLogs, profile, goal) {
     </div>`;
   }
   const nudge = generateGoalNudge(weekLogs, profile, goal);
-  if (!nudge) return '';
+  if (!nudge) return "";
   return `
-    <div class="goal-banner glass-card span-full ${nudge.onTrack ? 'goal-banner--good' : 'goal-banner--warn'}">
-      <span class="goal-banner-icon">${nudge.onTrack ? 'âœ…' : 'ðŸ“Š'}</span>
+    <div class="goal-banner glass-card span-full ${nudge.onTrack ? "goal-banner--good" : "goal-banner--warn"}">
+      <span class="goal-banner-icon">${nudge.onTrack ? "âœ…" : "ðŸ“Š"}</span>
       <div>
         <p>${nudge.sentence}</p>
-        ${nudge.leverTip ? `<p class="goal-lever-tip">ðŸ’¡ <em>${nudge.leverTip}</em></p>` : ''}
+        ${nudge.leverTip ? `<p class="goal-lever-tip">ðŸ’¡ <em>${nudge.leverTip}</em></p>` : ""}
       </div>
     </div>
   `;
@@ -399,36 +506,63 @@ function _renderGoalBanner(weekLogs, profile, goal) {
 
 function _renderCategoryBars(totals, weekTotal) {
   const cats = [
-    { key:'transport',   label:'ðŸš— Transport', color:'#4ecdc4' },
-    { key:'food',        label:'ðŸ½ï¸ Food',       color:'#ffd93d' },
-    { key:'energy',      label:'âš¡ Energy',      color:'#ff6b6b' },
-    { key:'consumption', label:'ðŸ›ï¸ Shopping',    color:'#a78bfa' },
+    { key: "transport", label: "ðŸš— Transport", color: "#4ecdc4" },
+    { key: "food", label: "ðŸ½ï¸ Food", color: "#ffd93d" },
+    { key: "energy", label: "âš¡ Energy", color: "#ff6b6b" },
+    { key: "consumption", label: "ðŸ›ï¸ Shopping", color: "#a78bfa" },
   ];
   if (weekTotal === 0) return '<p class="empty-state">No data yet</p>';
-  return cats.map(cat => {
-    const pct = weekTotal > 0 ? ((totals[cat.key] / weekTotal) * 100).toFixed(0) : 0;
-    return `<div class="cat-bar-row">
+  return cats
+    .map((cat) => {
+      const pct =
+        weekTotal > 0 ? ((totals[cat.key] / weekTotal) * 100).toFixed(0) : 0;
+      return `<div class="cat-bar-row">
       <span class="cat-bar-label">${cat.label}</span>
       <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct}%;background:${cat.color}"></div></div>
       <span class="cat-bar-value">${totals[cat.key].toFixed(1)} kg</span>
     </div>`;
-  }).join('');
+    })
+    .join("");
 }
 
 function _renderMilestones(allLogs, stats) {
   const milestones = [];
-  if (allLogs.length >= 1)  milestones.push({ icon:'ðŸ“…', text:'First log recorded â€” you started your journey!' });
-  if (allLogs.length >= 7)  milestones.push({ icon:'ðŸ—“ï¸', text:'7 days logged â€” you\'re building a habit.' });
-  if (allLogs.length >= 30) milestones.push({ icon:'ðŸ“†', text:'30 days logged â€” you\'re a carbon-conscious pro.' });
-  if (stats.streak >= 3)    milestones.push({ icon:'ðŸ”¥', text:`${stats.streak} days under your daily average in a row!` });
+  if (allLogs.length >= 1)
+    milestones.push({
+      icon: "ðŸ“…",
+      text: "First log recorded â€” you started your journey!",
+    });
+  if (allLogs.length >= 7)
+    milestones.push({
+      icon: "ðŸ—“ï¸",
+      text: "7 days logged â€” you're building a habit.",
+    });
+  if (allLogs.length >= 30)
+    milestones.push({
+      icon: "ðŸ“†",
+      text: "30 days logged â€” you're a carbon-conscious pro.",
+    });
+  if (stats.streak >= 3)
+    milestones.push({
+      icon: "ðŸ”¥",
+      text: `${stats.streak} days under your daily average in a row!`,
+    });
   if (stats.weekTotal < EMISSION_FACTORS.baselines.paris_target_daily_kg * 7) {
-    milestones.push({ icon:'ðŸŒ', text:'This week was under the Paris 1.5Â°C weekly budget. Outstanding!' });
+    milestones.push({
+      icon: "ðŸŒ",
+      text: "This week was under the Paris 1.5Â°C weekly budget. Outstanding!",
+    });
   }
-  if (milestones.length === 0) return '<p class="empty-state">Log a few days to unlock milestones!</p>';
-  return milestones.map(m => `<div class="milestone-item"><span class="milestone-icon">${m.icon}</span><span class="milestone-text">${m.text}</span></div>`).join('');
+  if (milestones.length === 0)
+    return '<p class="empty-state">Log a few days to unlock milestones!</p>';
+  return milestones
+    .map(
+      (m) =>
+        `<div class="milestone-item"><span class="milestone-icon">${m.icon}</span><span class="milestone-text">${m.text}</span></div>`,
+    )
+    .join("");
 }
 
 function _computeTargetKg(percent) {
   return EMISSION_FACTORS.baselines.global_avg_daily_kg * (1 - percent / 100);
 }
-

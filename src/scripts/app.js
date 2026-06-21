@@ -7,13 +7,20 @@
  * Handles navigation between sections and global UI state.
  */
 
-import { hasCompletedOnboarding, loadProfile, loadRecentLogs, loadTodayLog, loadAllLogs, clearAllData } from './storage.js';
-import { renderOnboarding } from './onboarding.js';
-import { renderActivityLogger } from './activityLogger.js';
-import { renderDashboard } from './dashboard.js';
-import { generateInsight } from './insightsEngine.js';
-import { renderSimulator } from './simulator.js';
-import { renderChallenges } from './challenges.js';
+import {
+  hasCompletedOnboarding,
+  loadProfile,
+  loadRecentLogs,
+  loadTodayLog,
+  loadAllLogs,
+  clearAllData,
+} from "./storage.js";
+import { renderOnboarding } from "./onboarding.js";
+import { renderActivityLogger } from "./activityLogger.js";
+import { renderDashboard } from "./dashboard.js";
+import { generateInsight } from "./insightsEngine.js";
+import { renderSimulator } from "./simulator.js";
+import { renderChallenges } from "./challenges.js";
 
 // Module-level profile cache (enables lazy rendering in navigateTo)
 let _profile = null;
@@ -22,7 +29,7 @@ let _profile = null;
 // BOOTSTRAP
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   initApp();
 });
 
@@ -34,15 +41,15 @@ function initApp() {
   initNavigation();
 
   // Wire reset button
-  document.getElementById('reset-btn')?.addEventListener('click', () => {
-    if (confirm('This will clear all your local data. Are you sure?')) {
+  document.getElementById("reset-btn")?.addEventListener("click", () => {
+    if (confirm("This will clear all your local data. Are you sure?")) {
       clearAllData();
       location.reload();
     }
   });
 
   // Wire export button
-  document.getElementById('export-btn')?.addEventListener('click', _exportCSV);
+  document.getElementById("export-btn")?.addEventListener("click", _exportCSV);
 
   // Check onboarding
   if (!hasCompletedOnboarding()) {
@@ -59,7 +66,7 @@ function onProfileReady(profile) {
   _profile = profile; // cache for lazy renderers
 
   // Update greeting
-  const greet = document.getElementById('hero-greeting');
+  const greet = document.getElementById("hero-greeting");
   if (greet && profile?.name) {
     greet.textContent = `Welcome back, ${profile.name}!`;
   } else if (greet) {
@@ -86,7 +93,7 @@ function onProfileReady(profile) {
   updateNavBadge();
 
   // Animate on-load
-  document.body.classList.add('app-ready');
+  document.body.classList.add("app-ready");
 }
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -96,18 +103,18 @@ function onProfileReady(profile) {
 function onDayLogged(log, profile) {
   // Generate insight
   const weekLogs = loadRecentLogs(7);
-  const insight  = generateInsight(log, weekLogs, profile);
+  const insight = generateInsight(log, weekLogs, profile);
   renderInsight(insight);
 
   // Re-render dashboard with new data
   renderDashboard(profile);
 
   // Navigate to insights view
-  navigateTo('insights');
+  navigateTo("insights");
   updateNavBadge();
 
   // Scroll to top
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -115,29 +122,29 @@ function onDayLogged(log, profile) {
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function renderInsight(insight) {
-  const section = document.getElementById('insights-section');
+  const section = document.getElementById("insights-section");
   if (!section) return;
 
   // Hide empty state when a real insight is available
-  const emptyState = document.getElementById('insights-empty-state');
-  if (emptyState) emptyState.classList.add('hidden');
+  const emptyState = document.getElementById("insights-empty-state");
+  if (emptyState) emptyState.classList.add("hidden");
 
   const catColors = {
-    transport:   { color: '#4ecdc4', icon: 'ðŸš—' },
-    food:        { color: '#ffd93d', icon: 'ðŸ½ï¸' },
-    energy:      { color: '#ff6b6b', icon: 'âš¡' },
-    consumption: { color: '#a78bfa', icon: 'ðŸ›ï¸' },
-    null:        { color: '#12d98a', icon: 'ðŸŒ¿' },
+    transport: { color: "#4ecdc4", icon: "ðŸš—" },
+    food: { color: "#ffd93d", icon: "ðŸ½ï¸" },
+    energy: { color: "#ff6b6b", icon: "âš¡" },
+    consumption: { color: "#a78bfa", icon: "ðŸ›ï¸" },
+    null: { color: "#12d98a", icon: "ðŸŒ¿" },
   };
-  const meta = catColors[insight.category] || catColors['null'];
+  const meta = catColors[insight.category] || catColors["null"];
 
   section.innerHTML = `
-    <div class="insight-card glass-card ${insight.isPositive ? 'insight-positive' : ''}">
+    <div class="insight-card glass-card ${insight.isPositive ? "insight-positive" : ""}">
       <div class="insight-header">
         <span class="insight-cat-icon">${meta.icon}</span>
         <div>
           <span class="insight-badge" style="color:${meta.color}">
-            ${insight.isPositive ? 'Great work today!' : 'Today\'s insight'}
+            ${insight.isPositive ? "Great work today!" : "Today's insight"}
           </span>
           <h2 class="insight-headline">
             ${insight.isPositive ? "You're doing great ðŸŒ" : "Here's what stood out today"}
@@ -150,7 +157,7 @@ function renderInsight(insight) {
           <p class="insight-context-text">${insight.contextSentence}</p>
         </div>
 
-        <div class="insight-tip-box ${insight.isPositive ? 'tip-box-positive' : 'tip-box-action'}">
+        <div class="insight-tip-box ${insight.isPositive ? "tip-box-positive" : "tip-box-action"}">
           <span class="tip-icon">ðŸ’¡</span>
           <p class="insight-tip-text">${insight.tipText}</p>
         </div>
@@ -163,8 +170,12 @@ function renderInsight(insight) {
     </div>
   `;
 
-  document.getElementById('log-another-btn')?.addEventListener('click', () => navigateTo('logger'));
-  document.getElementById('view-dashboard-btn')?.addEventListener('click', () => navigateTo('dashboard'));
+  document
+    .getElementById("log-another-btn")
+    ?.addEventListener("click", () => navigateTo("logger"));
+  document
+    .getElementById("view-dashboard-btn")
+    ?.addEventListener("click", () => navigateTo("dashboard"));
 }
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -172,34 +183,36 @@ function renderInsight(insight) {
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function initNavigation() {
-  document.querySelectorAll('[data-nav]').forEach(btn => {
-    btn.addEventListener('click', () => navigateTo(btn.dataset.nav));
+  document.querySelectorAll("[data-nav]").forEach((btn) => {
+    btn.addEventListener("click", () => navigateTo(btn.dataset.nav));
   });
 }
 
 function navigateTo(view) {
   // Hide all views
-  document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
+  document
+    .querySelectorAll(".app-view")
+    .forEach((v) => v.classList.add("hidden"));
   // Show target view
   const target = document.getElementById(`view-${view}`);
-  target?.classList.remove('hidden');
+  target?.classList.remove("hidden");
 
   // Update nav active state
-  document.querySelectorAll('[data-nav]').forEach(btn => {
-    btn.classList.toggle('nav-active', btn.dataset.nav === view);
+  document.querySelectorAll("[data-nav]").forEach((btn) => {
+    btn.classList.toggle("nav-active", btn.dataset.nav === view);
   });
 
   // Lazy-render new views on each visit (they need fresh log data)
-  if (view === 'simulator')  renderSimulator(_profile);
-  if (view === 'challenges') renderChallenges();
+  if (view === "simulator") renderSimulator(_profile);
+  if (view === "challenges") renderChallenges();
 }
 
 function updateNavBadge() {
-  const badge = document.getElementById('logger-nav-badge');
+  const badge = document.getElementById("logger-nav-badge");
   const todayLog = loadTodayLog();
   if (badge) {
-    badge.classList.toggle('badge-done', Boolean(todayLog));
-    badge.textContent = todayLog ? 'âœ“' : 'â€¢';
+    badge.classList.toggle("badge-done", Boolean(todayLog));
+    badge.textContent = todayLog ? "âœ“" : "â€¢";
   }
 }
 
@@ -208,17 +221,25 @@ function updateNavBadge() {
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function showMethodologyModal() {
-  const modal = document.getElementById('methodology-modal');
+  const modal = document.getElementById("methodology-modal");
   if (!modal) return;
-  modal.classList.remove('hidden');
+  modal.classList.remove("hidden");
 
   // Use { once: true } to avoid stacking duplicate listeners on repeated opens
-  document.getElementById('modal-close')?.addEventListener('click', () => {
-    modal.classList.add('hidden');
-  }, { once: true });
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) modal.classList.add('hidden');
-  }, { once: true });
+  document.getElementById("modal-close")?.addEventListener(
+    "click",
+    () => {
+      modal.classList.add("hidden");
+    },
+    { once: true },
+  );
+  modal.addEventListener(
+    "click",
+    (e) => {
+      if (e.target === modal) modal.classList.add("hidden");
+    },
+    { once: true },
+  );
 }
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -227,19 +248,25 @@ function showMethodologyModal() {
 
 function _exportCSV() {
   const logs = loadAllLogs();
-  if (logs.length === 0) { alert('No data to export yet â€” log a day first!'); return; }
-  const header = 'Date,Transport(kg),Food(kg),Energy(kg),Shopping(kg),Total(kg),Note\n';
-  const rows = logs.map(l =>
-    `${l.date},${(l.totals?.transport||0).toFixed(3)},${(l.totals?.food||0).toFixed(3)},` +
-    `${(l.totals?.energy||0).toFixed(3)},${(l.totals?.consumption||0).toFixed(3)},` +
-    `${(l.totals?.total||0).toFixed(3)},"${(l.note||'').replace(/"/g, '""')}"`
-  ).join('\n');
-  const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
-  const url  = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href  = url;
-  link.download = `carbonlite-export-${new Date().toISOString().slice(0,10)}.csv`;
+  if (logs.length === 0) {
+    alert("No data to export yet â€” log a day first!");
+    return;
+  }
+  const header =
+    "Date,Transport(kg),Food(kg),Energy(kg),Shopping(kg),Total(kg),Note\n";
+  const rows = logs
+    .map(
+      (l) =>
+        `${l.date},${(l.totals?.transport || 0).toFixed(3)},${(l.totals?.food || 0).toFixed(3)},` +
+        `${(l.totals?.energy || 0).toFixed(3)},${(l.totals?.consumption || 0).toFixed(3)},` +
+        `${(l.totals?.total || 0).toFixed(3)},"${(l.note || "").replace(/"/g, '""')}"`,
+    )
+    .join("\n");
+  const blob = new Blob([header + rows], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `carbonlite-export-${new Date().toISOString().slice(0, 10)}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
-
