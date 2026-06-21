@@ -43,7 +43,7 @@ The product is designed around one promise: **a 30-second daily check-in, not a 
 
 To directly address the evaluation criteria for **Problem Statement Alignment**:
 
-### 1. Chosen Vertical
+### 1. Chosen Vertical & Core Persona
 **Persona:** Environmentally conscious individual seeking actionable insights without complexity.
 **Logic:** Most footprint calculators are overwhelming one-off questionnaires that cause fatigue. CarbonLite is designed for *daily retention*—a 30-second logger that uses transparent, rule-based logic (not black-box AI) to deliver exactly *one* highly targeted behavioural nudge per day based on real data.
 

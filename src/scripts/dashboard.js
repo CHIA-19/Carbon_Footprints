@@ -484,6 +484,10 @@ function _computeStreak(allLogs, benchmark) {
 
 // â”€â”€â”€ HELPERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function _renderGoalBanner(weekLogs, profile, goal) {
   if (!goal || weekLogs.length === 0) {
     return `<div class="goal-banner glass-card span-full">
@@ -504,6 +508,10 @@ function _renderGoalBanner(weekLogs, profile, goal) {
   `;
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function _renderCategoryBars(totals, weekTotal) {
   const cats = [
     { key: "transport", label: "ðŸš— Transport", color: "#4ecdc4" },
@@ -525,6 +533,10 @@ function _renderCategoryBars(totals, weekTotal) {
     .join("");
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function _renderMilestones(allLogs, stats) {
   const milestones = [];
   if (allLogs.length >= 1)
@@ -563,6 +575,10 @@ function _renderMilestones(allLogs, stats) {
     .join("");
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function _computeTargetKg(percent) {
   return EMISSION_FACTORS.baselines.global_avg_daily_kg * (1 - percent / 100);
 }

@@ -441,6 +441,10 @@ export function renderActivityLogger(profile, onSubmit) {
 // Internal: wire up interactions
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function _initLoggerInteractions(profile, onSubmit) {
   const form = document.getElementById("activity-form");
   if (!form) return;
@@ -540,6 +544,10 @@ function _initLoggerInteractions(profile, onSubmit) {
   _updateLiveCalcs(profile);
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function _readFormInputs(form) {
   const fd = new FormData(form);
   // Read raw values, then pass through the validation/sanitisation layer
@@ -565,6 +573,10 @@ function _readFormInputs(form) {
   return sanitiseLogInputs(raw);
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function _updateLiveCalcs(profile) {
   const form = document.getElementById("activity-form");
   if (!form) return;

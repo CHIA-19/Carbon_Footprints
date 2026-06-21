@@ -155,6 +155,10 @@ export function renderOnboarding(onComplete) {
   _initOnboardingInteractions(overlay, onComplete);
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function _initOnboardingInteractions(overlay, onComplete) {
   const state = {
     name: "",
@@ -240,11 +244,19 @@ function _initOnboardingInteractions(overlay, onComplete) {
   });
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function _goto(from, to) {
   document.getElementById(`ob-step-${from}`)?.classList.add("hidden");
   document.getElementById(`ob-step-${to}`)?.classList.remove("hidden");
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function _initOptionGrid(gridId, onSelect) {
   const grid = document.getElementById(gridId);
   grid?.querySelectorAll(".option-btn").forEach((btn) => {

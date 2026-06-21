@@ -336,6 +336,10 @@ export function generateGoalNudge(weekLogs, profile, goal) {
 // Internal helpers
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function _computeWeeklyAverages(weekLogs) {
   if (weekLogs.length === 0)
     return { transport: 0, food: 0, energy: 0, consumption: 0, _total: 0 };
@@ -349,6 +353,10 @@ function _computeWeeklyAverages(weekLogs) {
   return Object.fromEntries(Object.entries(sums).map(([k, v]) => [k, v / n]));
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function _buildContextSentence(
   topCategory,
   catToday,
@@ -389,6 +397,10 @@ function _buildContextSentence(
   return `${label} was your biggest footprint source today at approx. ${catToday.toFixed(1)} kg COâ‚‚e${devStr}.${detail}`;
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function _tipNotExcludedByProfile(tip, profile) {
   if (!tip.excludeIfProfile || !profile) return true;
   for (const [profileKey, excludedValues] of Object.entries(

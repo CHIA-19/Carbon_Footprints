@@ -27,6 +27,10 @@ const KEYS = {
 // Internal helpers
 // ─────────────────────────────────────────────────────────────────
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function read(key) {
   try {
     const raw = localStorage.getItem(key);
@@ -37,6 +41,10 @@ function read(key) {
   }
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function write(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
@@ -63,14 +71,26 @@ export function saveProfile(profile) {
   write(KEYS.PROFILE, { ...profile, savedAt: new Date().toISOString() });
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 export function loadProfile() {
   return read(KEYS.PROFILE);
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 export function hasCompletedOnboarding() {
   return Boolean(read(KEYS.SEEN_ONBOARDING));
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 export function markOnboardingComplete() {
   write(KEYS.SEEN_ONBOARDING, true);
 }
@@ -150,6 +170,10 @@ export function recordSuggestionShown(suggestionId) {
   write(KEYS.SUGGESTIONS, history);
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 export function getShownSuggestionIds() {
   const history = read(KEYS.SUGGESTIONS) || {
     weekStart: _currentWeekStart(),
@@ -160,6 +184,10 @@ export function getShownSuggestionIds() {
   return history.ids;
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function _currentWeekStart() {
   const d = new Date();
   const day = d.getDay(); // 0 = Sunday
@@ -179,6 +207,10 @@ export function saveGoal(percent) {
   write(KEYS.GOAL, { percent, savedAt: new Date().toISOString() });
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 export function loadGoal() {
   return read(KEYS.GOAL);
 }
@@ -231,6 +263,10 @@ export function saveJournalNote(date, note) {
 // Utility: clear all data (for settings/reset)
 // ─────────────────────────────────────────────────────────────────
 
+/**
+ * @description Internal function
+ * @internal
+ */
 export function clearAllData() {
   Object.values(KEYS).forEach((k) => localStorage.removeItem(k));
 }

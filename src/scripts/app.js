@@ -33,6 +33,10 @@ document.addEventListener("DOMContentLoaded", () => {
   initApp();
 });
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function initApp() {
   // Register global modal helper
   window.showMethodologyModal = showMethodologyModal;
@@ -62,6 +66,10 @@ function initApp() {
   }
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function onProfileReady(profile) {
   _profile = profile; // cache for lazy renderers
 
@@ -100,6 +108,10 @@ function onProfileReady(profile) {
 // AFTER LOG SUBMITTED
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function onDayLogged(log, profile) {
   // Generate insight
   const weekLogs = loadRecentLogs(7);
@@ -121,6 +133,10 @@ function onDayLogged(log, profile) {
 // INSIGHT RENDERING
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function renderInsight(insight) {
   const section = document.getElementById("insights-section");
   if (!section) return;
@@ -182,12 +198,20 @@ function renderInsight(insight) {
 // NAVIGATION
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function initNavigation() {
   document.querySelectorAll("[data-nav]").forEach((btn) => {
     btn.addEventListener("click", () => navigateTo(btn.dataset.nav));
   });
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function navigateTo(view) {
   // Hide all views
   document
@@ -207,6 +231,10 @@ function navigateTo(view) {
   if (view === "challenges") renderChallenges();
 }
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function updateNavBadge() {
   const badge = document.getElementById("logger-nav-badge");
   const todayLog = loadTodayLog();
@@ -220,6 +248,10 @@ function updateNavBadge() {
 // METHODOLOGY MODAL
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function showMethodologyModal() {
   const modal = document.getElementById("methodology-modal");
   if (!modal) return;
@@ -246,6 +278,10 @@ function showMethodologyModal() {
 // DATA EXPORT (CSV)
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+/**
+ * @description Internal function
+ * @internal
+ */
 function _exportCSV() {
   const logs = loadAllLogs();
   if (logs.length === 0) {
