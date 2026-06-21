@@ -1,11 +1,12 @@
+﻿"use strict";
 /**
  * activityLogger.js
  * =================
- * Handles the daily activity logging form UI and CO₂e calculation logic.
+ * Handles the daily activity logging form UI and COâ‚‚e calculation logic.
  *
  * CALCULATION APPROACH:
- *   Total daily CO₂e = transport_kg + food_kg + energy_kg + consumption_kg
- *   Each sub-total is derived from user inputs × emission factors (emissionFactors.js).
+ *   Total daily COâ‚‚e = transport_kg + food_kg + energy_kg + consumption_kg
+ *   Each sub-total is derived from user inputs Ã— emission factors (emissionFactors.js).
  *   Results are always presented as approximations (~).
  */
 
@@ -13,16 +14,16 @@ import { EMISSION_FACTORS, getTransportFactor, getFoodFactor, getElectricityFact
 import { saveLog, loadTodayLog } from './storage.js';
 import { sanitiseLogInputs } from './validation.js';
 
-// ─────────────────────────────────────────────────────────────────
-// CALCULATION FUNCTIONS (pure — no DOM, fully unit-testable)
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// CALCULATION FUNCTIONS (pure â€” no DOM, fully unit-testable)
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
- * Calculate transport CO₂e for a day.
- * @param {string} mode       — transport mode key
- * @param {string} subtype    — fuel/vehicle subtype (for car)
- * @param {number} distanceKm — distance travelled today in km
- * @returns {number} kg CO₂e
+ * Calculate transport COâ‚‚e for a day.
+ * @param {string} mode       â€” transport mode key
+ * @param {string} subtype    â€” fuel/vehicle subtype (for car)
+ * @param {number} distanceKm â€” distance travelled today in km
+ * @returns {number} kg COâ‚‚e
  */
 export function calcTransportEmissions(mode, subtype, distanceKm, shortFlightKm = 0, longFlightKm = 0) {
   // Defensive clamp: reject negative or non-finite distances
@@ -35,13 +36,13 @@ export function calcTransportEmissions(mode, subtype, distanceKm, shortFlightKm 
 }
 
 /**
- * Calculate food CO₂e for a day.
- * @param {number} meatMeals      — number of red-meat meals
- * @param {number} poultryMeals   — number of chicken/fish meals
- * @param {number} vegMeals       — number of vegetarian meals
- * @param {number} veganMeals     — number of vegan meals
- * @param {number} deliveryOrders — number of food delivery orders (overhead)
- * @returns {number} kg CO₂e
+ * Calculate food COâ‚‚e for a day.
+ * @param {number} meatMeals      â€” number of red-meat meals
+ * @param {number} poultryMeals   â€” number of chicken/fish meals
+ * @param {number} vegMeals       â€” number of vegetarian meals
+ * @param {number} veganMeals     â€” number of vegan meals
+ * @param {number} deliveryOrders â€” number of food delivery orders (overhead)
+ * @returns {number} kg COâ‚‚e
  */
 export function calcFoodEmissions(meatMeals, poultryMeals, vegMeals, veganMeals, deliveryOrders) {
   const f = EMISSION_FACTORS.food;
@@ -57,17 +58,17 @@ export function calcFoodEmissions(meatMeals, poultryMeals, vegMeals, veganMeals,
 }
 
 /**
- * Calculate home energy CO₂e for a day.
- * @param {number} acHours        — hours of AC/heating use
- * @param {number} electricityKwh — kWh of electricity (if user knows it)
- * @param {string} energyType     — 'grid' | 'renewable' | 'unsure'
- * @param {number} householdSize  — number of people sharing the home (to attribute share)
- * @returns {number} kg CO₂e (user's personal share)
+ * Calculate home energy COâ‚‚e for a day.
+ * @param {number} acHours        â€” hours of AC/heating use
+ * @param {number} electricityKwh â€” kWh of electricity (if user knows it)
+ * @param {string} energyType     â€” 'grid' | 'renewable' | 'unsure'
+ * @param {number} householdSize  â€” number of people sharing the home (to attribute share)
+ * @returns {number} kg COâ‚‚e (user's personal share)
  */
 export function calcEnergyEmissions(acHours, electricityKwh, energyType, householdSize, country = null) {
   const e = EMISSION_FACTORS.energy;
   const elecFactor = getElectricityFactor(energyType || 'unsure', country);
-  // householdSize must be at least 1; clamp to realistic range 1–20
+  // householdSize must be at least 1; clamp to realistic range 1â€“20
   const hh = (isFinite(householdSize) && householdSize >= 1) ? Math.min(Math.floor(householdSize), 20) : 1;
   const ac  = (isFinite(acHours) && acHours > 0) ? Math.min(acHours, 24) : 0;
   const kwh = (isFinite(electricityKwh) && electricityKwh > 0) ? Math.min(electricityKwh, 200) : 0;
@@ -77,11 +78,11 @@ export function calcEnergyEmissions(acHours, electricityKwh, energyType, househo
 }
 
 /**
- * Calculate consumption/shopping CO₂e for a day.
- * @param {number} parcels         — number of online delivery parcels received
- * @param {number} clothingItems   — number of new clothing items bought
- * @param {number} electronicsSmall — small electronics items (earphones, etc.)
- * @returns {number} kg CO₂e
+ * Calculate consumption/shopping COâ‚‚e for a day.
+ * @param {number} parcels         â€” number of online delivery parcels received
+ * @param {number} clothingItems   â€” number of new clothing items bought
+ * @param {number} electronicsSmall â€” small electronics items (earphones, etc.)
+ * @returns {number} kg COâ‚‚e
  */
 export function calcConsumptionEmissions(parcels, clothingItems, electronicsSmall) {
   const c = EMISSION_FACTORS.consumption;
@@ -95,9 +96,9 @@ export function calcConsumptionEmissions(parcels, clothingItems, electronicsSmal
 
 /**
  * Bundle all category calculations into one totals object.
- * @param {Object} inputs — all form field values
- * @param {Object} profile — user baseline (for householdSize, energyType)
- * @returns {Object} totals — { transport, food, energy, consumption, total } in kg CO₂e
+ * @param {Object} inputs â€” all form field values
+ * @param {Object} profile â€” user baseline (for householdSize, energyType)
+ * @returns {Object} totals â€” { transport, food, energy, consumption, total } in kg COâ‚‚e
  */
 export function calculateDayTotals(inputs, profile) {
   const transport   = calcTransportEmissions(inputs.transportMode, inputs.carFuelType, inputs.distanceKm, inputs.shortFlightKm, inputs.longFlightKm);
@@ -108,15 +109,15 @@ export function calculateDayTotals(inputs, profile) {
   return { transport, food, energy, consumption, total };
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // UI RENDERING
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Render the activity logger form into #logger-section.
  * Pre-fills with today's existing log if available.
- * @param {Object} profile — user baseline profile
- * @param {Function} onSubmit — callback(log) called after successful save
+ * @param {Object} profile â€” user baseline profile
+ * @param {Function} onSubmit â€” callback(log) called after successful save
  */
 export function renderActivityLogger(profile, onSubmit) {
   const section = document.getElementById('logger-section');
@@ -134,14 +135,14 @@ export function renderActivityLogger(profile, onSubmit) {
           <h2>How was your day, ${profile?.name || 'friend'}?</h2>
           <p class="logger-date">${today}</p>
         </div>
-        ${hasLogged ? '<span class="logged-badge">✓ Logged today</span>' : '<span class="pending-badge">● Not logged yet</span>'}
+        ${hasLogged ? '<span class="logged-badge">âœ“ Logged today</span>' : '<span class="pending-badge">â— Not logged yet</span>'}
       </div>
 
       <form id="activity-form" novalidate>
-        <!-- ── TRANSPORT ── -->
+        <!-- â”€â”€ TRANSPORT â”€â”€ -->
         <div class="form-section">
           <div class="form-section-header">
-            <span class="category-icon">🚗</span>
+            <span class="category-icon">ðŸš—</span>
             <div>
               <h3>Transport</h3>
               <p>How did you get around today?</p>
@@ -151,14 +152,14 @@ export function renderActivityLogger(profile, onSubmit) {
             <div class="form-field">
               <label for="transport-mode">Main mode</label>
               <select id="transport-mode" name="transportMode">
-                <option value="car"        ${profile?.commuteMode === 'car'        ? 'selected':''}>🚗 Car</option>
-                <option value="ev"         ${profile?.commuteMode === 'ev'         ? 'selected':''}>⚡ EV</option>
-                <option value="motorbike"  ${profile?.commuteMode === 'motorbike'  ? 'selected':''}>🛵 Motorbike</option>
-                <option value="bus"        ${profile?.commuteMode === 'bus'        ? 'selected':''}>🚌 Bus</option>
-                <option value="train"      ${profile?.commuteMode === 'train'      ? 'selected':''}>🚆 Train / Metro</option>
-                <option value="bike"       ${profile?.commuteMode === 'bike'       ? 'selected':''}>🚲 Bicycle</option>
-                <option value="walk"       ${profile?.commuteMode === 'walk'       ? 'selected':''}>🚶 Walking</option>
-                <option value="rideshare"  >🚕 Rideshare (Uber/Ola)</option>
+                <option value="car"        ${profile?.commuteMode === 'car'        ? 'selected':''}>ðŸš— Car</option>
+                <option value="ev"         ${profile?.commuteMode === 'ev'         ? 'selected':''}>âš¡ EV</option>
+                <option value="motorbike"  ${profile?.commuteMode === 'motorbike'  ? 'selected':''}>ðŸ›µ Motorbike</option>
+                <option value="bus"        ${profile?.commuteMode === 'bus'        ? 'selected':''}>ðŸšŒ Bus</option>
+                <option value="train"      ${profile?.commuteMode === 'train'      ? 'selected':''}>ðŸš† Train / Metro</option>
+                <option value="bike"       ${profile?.commuteMode === 'bike'       ? 'selected':''}>ðŸš² Bicycle</option>
+                <option value="walk"       ${profile?.commuteMode === 'walk'       ? 'selected':''}>ðŸš¶ Walking</option>
+                <option value="rideshare"  >ðŸš• Rideshare (Uber/Ola)</option>
               </select>
             </div>
             <div class="form-field" id="fuel-type-field" style="display:none">
@@ -173,20 +174,20 @@ export function renderActivityLogger(profile, onSubmit) {
             <div class="form-field">
               <label for="distance-km">Distance (km)</label>
               <div class="stepper-field">
-                <button type="button" class="stepper-btn" data-target="distance-km" data-delta="-5">−</button>
+                <button type="button" class="stepper-btn" data-target="distance-km" data-delta="-5">âˆ’</button>
                 <input type="number" id="distance-km" name="distanceKm" min="0" max="500" value="${existingLog?.transport?.distanceKm || 0}" placeholder="0">
                 <button type="button" class="stepper-btn" data-target="distance-km" data-delta="5">+</button>
               </div>
               <span class="field-unit">km</span>
             </div>
           </div>
-          <div class="live-calc" id="transport-live">~ 0.0 kg CO₂e</div>
+          <div class="live-calc" id="transport-live">~ 0.0 kg COâ‚‚e</div>
         </div>
 
-        <!-- ── FOOD ── -->
+        <!-- â”€â”€ FOOD â”€â”€ -->
         <div class="form-section">
           <div class="form-section-header">
-            <span class="category-icon">🍽️</span>
+            <span class="category-icon">ðŸ½ï¸</span>
             <div>
               <h3>Food</h3>
               <p>What did you eat today?</p>
@@ -194,53 +195,53 @@ export function renderActivityLogger(profile, onSubmit) {
           </div>
           <div class="form-row">
             <div class="form-field">
-              <label for="meat-meals">🥩 Red meat meals</label>
+              <label for="meat-meals">ðŸ¥© Red meat meals</label>
               <div class="stepper-field">
-                <button type="button" class="stepper-btn" data-target="meat-meals" data-delta="-1">−</button>
+                <button type="button" class="stepper-btn" data-target="meat-meals" data-delta="-1">âˆ’</button>
                 <input type="number" id="meat-meals" name="meatMeals" min="0" max="10" value="${existingLog?.food?.meatMeals || 0}">
                 <button type="button" class="stepper-btn" data-target="meat-meals" data-delta="1">+</button>
               </div>
             </div>
             <div class="form-field">
-              <label for="poultry-meals">🍗 Chicken/Fish meals</label>
+              <label for="poultry-meals">ðŸ— Chicken/Fish meals</label>
               <div class="stepper-field">
-                <button type="button" class="stepper-btn" data-target="poultry-meals" data-delta="-1">−</button>
+                <button type="button" class="stepper-btn" data-target="poultry-meals" data-delta="-1">âˆ’</button>
                 <input type="number" id="poultry-meals" name="poultryMeals" min="0" max="10" value="${existingLog?.food?.poultryMeals || 0}">
                 <button type="button" class="stepper-btn" data-target="poultry-meals" data-delta="1">+</button>
               </div>
             </div>
             <div class="form-field">
-              <label for="veg-meals">🥗 Vegetarian meals</label>
+              <label for="veg-meals">ðŸ¥— Vegetarian meals</label>
               <div class="stepper-field">
-                <button type="button" class="stepper-btn" data-target="veg-meals" data-delta="-1">−</button>
+                <button type="button" class="stepper-btn" data-target="veg-meals" data-delta="-1">âˆ’</button>
                 <input type="number" id="veg-meals" name="vegMeals" min="0" max="10" value="${existingLog?.food?.vegMeals || 0}">
                 <button type="button" class="stepper-btn" data-target="veg-meals" data-delta="1">+</button>
               </div>
             </div>
             <div class="form-field">
-              <label for="vegan-meals">🌱 Vegan meals</label>
+              <label for="vegan-meals">ðŸŒ± Vegan meals</label>
               <div class="stepper-field">
-                <button type="button" class="stepper-btn" data-target="vegan-meals" data-delta="-1">−</button>
+                <button type="button" class="stepper-btn" data-target="vegan-meals" data-delta="-1">âˆ’</button>
                 <input type="number" id="vegan-meals" name="veganMeals" min="0" max="10" value="${existingLog?.food?.veganMeals || 0}">
                 <button type="button" class="stepper-btn" data-target="vegan-meals" data-delta="1">+</button>
               </div>
             </div>
             <div class="form-field">
-              <label for="delivery-orders">📦 Food deliveries</label>
+              <label for="delivery-orders">ðŸ“¦ Food deliveries</label>
               <div class="stepper-field">
-                <button type="button" class="stepper-btn" data-target="delivery-orders" data-delta="-1">−</button>
+                <button type="button" class="stepper-btn" data-target="delivery-orders" data-delta="-1">âˆ’</button>
                 <input type="number" id="delivery-orders" name="deliveryOrders" min="0" max="10" value="${existingLog?.food?.deliveryOrders || 0}">
                 <button type="button" class="stepper-btn" data-target="delivery-orders" data-delta="1">+</button>
               </div>
             </div>
           </div>
-          <div class="live-calc" id="food-live">~ 0.0 kg CO₂e</div>
+          <div class="live-calc" id="food-live">~ 0.0 kg COâ‚‚e</div>
         </div>
 
-        <!-- ── ENERGY ── -->
+        <!-- â”€â”€ ENERGY â”€â”€ -->
         <div class="form-section">
           <div class="form-section-header">
-            <span class="category-icon">⚡</span>
+            <span class="category-icon">âš¡</span>
             <div>
               <h3>Home Energy</h3>
               <p>Heating, cooling, electricity today</p>
@@ -250,7 +251,7 @@ export function renderActivityLogger(profile, onSubmit) {
             <div class="form-field">
               <label for="ac-hours">AC / Heating (hrs)</label>
               <div class="stepper-field">
-                <button type="button" class="stepper-btn" data-target="ac-hours" data-delta="-1">−</button>
+                <button type="button" class="stepper-btn" data-target="ac-hours" data-delta="-1">âˆ’</button>
                 <input type="number" id="ac-hours" name="acHours" min="0" max="24" value="${existingLog?.energy?.acHours || 0}">
                 <button type="button" class="stepper-btn" data-target="ac-hours" data-delta="1">+</button>
               </div>
@@ -262,13 +263,13 @@ export function renderActivityLogger(profile, onSubmit) {
               <span class="field-unit">kWh</span>
             </div>
           </div>
-          <div class="live-calc" id="energy-live">~ 0.0 kg CO₂e</div>
+          <div class="live-calc" id="energy-live">~ 0.0 kg COâ‚‚e</div>
         </div>
 
-        <!-- ── CONSUMPTION ── -->
+        <!-- â”€â”€ CONSUMPTION â”€â”€ -->
         <div class="form-section">
           <div class="form-section-header">
-            <span class="category-icon">🛍️</span>
+            <span class="category-icon">ðŸ›ï¸</span>
             <div>
               <h3>Shopping & Consumption</h3>
               <p>Online orders, new items bought today</p>
@@ -276,70 +277,70 @@ export function renderActivityLogger(profile, onSubmit) {
           </div>
           <div class="form-row">
             <div class="form-field">
-              <label for="parcels">📬 Parcels received</label>
+              <label for="parcels">ðŸ“¬ Parcels received</label>
               <div class="stepper-field">
-                <button type="button" class="stepper-btn" data-target="parcels" data-delta="-1">−</button>
+                <button type="button" class="stepper-btn" data-target="parcels" data-delta="-1">âˆ’</button>
                 <input type="number" id="parcels" name="parcels" min="0" max="20" value="${existingLog?.consumption?.parcels || 0}">
                 <button type="button" class="stepper-btn" data-target="parcels" data-delta="1">+</button>
               </div>
             </div>
             <div class="form-field">
-              <label for="clothing-items">👕 New clothing items</label>
+              <label for="clothing-items">ðŸ‘• New clothing items</label>
               <div class="stepper-field">
-                <button type="button" class="stepper-btn" data-target="clothing-items" data-delta="-1">−</button>
+                <button type="button" class="stepper-btn" data-target="clothing-items" data-delta="-1">âˆ’</button>
                 <input type="number" id="clothing-items" name="clothingItems" min="0" max="20" value="${existingLog?.consumption?.clothingItems || 0}">
                 <button type="button" class="stepper-btn" data-target="clothing-items" data-delta="1">+</button>
               </div>
             </div>
             <div class="form-field">
-              <label for="electronics-small">🎧 Small electronics</label>
+              <label for="electronics-small">ðŸŽ§ Small electronics</label>
               <div class="stepper-field">
-                <button type="button" class="stepper-btn" data-target="electronics-small" data-delta="-1">−</button>
+                <button type="button" class="stepper-btn" data-target="electronics-small" data-delta="-1">âˆ’</button>
                 <input type="number" id="electronics-small" name="electronicsSmall" min="0" max="10" value="${existingLog?.consumption?.electronicsSmall || 0}">
                 <button type="button" class="stepper-btn" data-target="electronics-small" data-delta="1">+</button>
               </div>
             </div>
           </div>
-          <div class="live-calc" id="consumption-live">~ 0.0 kg CO₂e</div>
+          <div class="live-calc" id="consumption-live">~ 0.0 kg COâ‚‚e</div>
         </div>
 
-        <!-- ── FLIGHTS (collapsible) ── -->
+        <!-- â”€â”€ FLIGHTS (collapsible) â”€â”€ -->
         <div class="form-section flight-section">
           <button type="button" class="flight-toggle-btn" id="flight-toggle">
-            <span class="flight-toggle-icon">✈️</span>
+            <span class="flight-toggle-icon">âœˆï¸</span>
             <span>Log a flight or long-distance trip today</span>
-            <span class="flight-toggle-arrow" id="flight-arrow">▼</span>
+            <span class="flight-toggle-arrow" id="flight-arrow">â–¼</span>
           </button>
           <div id="flight-fields" class="flight-fields hidden">
             <p class="flight-info-note">Flight factors: short-haul 0.255 kg/km, long-haul 0.195 kg/km per passenger (DEFRA 2023)</p>
             <div class="form-row">
               <div class="form-field">
-                <label for="short-flight-km">✈️ Short-haul flight (&lt;3h)</label>
+                <label for="short-flight-km">âœˆï¸ Short-haul flight (&lt;3h)</label>
                 <div class="stepper-field">
-                  <button type="button" class="stepper-btn" data-target="short-flight-km" data-delta="-200">−</button>
+                  <button type="button" class="stepper-btn" data-target="short-flight-km" data-delta="-200">âˆ’</button>
                   <input type="number" id="short-flight-km" name="shortFlightKm" min="0" max="5000" value="${existingLog?.transport?.shortFlightKm || 0}" placeholder="0">
                   <button type="button" class="stepper-btn" data-target="short-flight-km" data-delta="200">+</button>
                 </div>
                 <span class="field-unit">km</span>
               </div>
               <div class="form-field">
-                <label for="long-flight-km">✈️ Long-haul flight (&gt;3h)</label>
+                <label for="long-flight-km">âœˆï¸ Long-haul flight (&gt;3h)</label>
                 <div class="stepper-field">
-                  <button type="button" class="stepper-btn" data-target="long-flight-km" data-delta="-500">−</button>
+                  <button type="button" class="stepper-btn" data-target="long-flight-km" data-delta="-500">âˆ’</button>
                   <input type="number" id="long-flight-km" name="longFlightKm" min="0" max="20000" value="${existingLog?.transport?.longFlightKm || 0}" placeholder="0">
                   <button type="button" class="stepper-btn" data-target="long-flight-km" data-delta="500">+</button>
                 </div>
                 <span class="field-unit">km</span>
               </div>
             </div>
-            <div class="live-calc" id="flight-live">~ 0.0 kg CO₂e from flights</div>
+            <div class="live-calc" id="flight-live">~ 0.0 kg COâ‚‚e from flights</div>
           </div>
         </div>
 
-        <!-- ── JOURNAL NOTE ── -->
+        <!-- â”€â”€ JOURNAL NOTE â”€â”€ -->
         <div class="form-section journal-section">
           <div class="form-section-header">
-            <span class="category-icon">📓</span>
+            <span class="category-icon">ðŸ““</span>
             <div>
               <h3>Today's Note <span class="optional-tag">optional</span></h3>
               <p>Anything notable about today? Shows as a tooltip in your heatmap.</p>
@@ -348,15 +349,15 @@ export function renderActivityLogger(profile, onSubmit) {
           <textarea id="journal-note" class="journal-textarea" rows="2" maxlength="200" placeholder="e.g. 'Took the train instead of driving today!'">${existingLog?.note || ''}</textarea>
         </div>
 
-        <!-- ── TOTAL + SUBMIT ── -->
+        <!-- â”€â”€ TOTAL + SUBMIT â”€â”€ -->
         <div class="logger-footer">
           <div class="total-preview">
             <span class="total-label">Today's estimate</span>
-            <span class="total-value" id="total-live">~ 0.0 kg CO₂e</span>
-            <button type="button" class="methodology-btn" id="methodology-btn" title="How we calculate this">ℹ️ Methodology</button>
+            <span class="total-value" id="total-live">~ 0.0 kg COâ‚‚e</span>
+            <button type="button" class="methodology-btn" id="methodology-btn" title="How we calculate this">â„¹ï¸ Methodology</button>
           </div>
           <button type="submit" class="btn-primary" id="log-submit-btn">
-            <span>${hasLogged ? '📝 Update Today\'s Log' : '✅ Save Today\'s Log'}</span>
+            <span>${hasLogged ? 'ðŸ“ Update Today\'s Log' : 'âœ… Save Today\'s Log'}</span>
           </button>
         </div>
       </form>
@@ -366,9 +367,9 @@ export function renderActivityLogger(profile, onSubmit) {
   _initLoggerInteractions(profile, onSubmit);
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Internal: wire up interactions
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function _initLoggerInteractions(profile, onSubmit) {
   const form = document.getElementById('activity-form');
@@ -436,7 +437,7 @@ function _initLoggerInteractions(profile, onSubmit) {
     const arrow  = document.getElementById('flight-arrow');
     const open   = !fields.classList.contains('hidden');
     fields.classList.toggle('hidden', open);
-    if (arrow) arrow.textContent = open ? '▼' : '▲';
+    if (arrow) arrow.textContent = open ? 'â–¼' : 'â–²';
     if (!open) _updateLiveCalcs(profile);
   });
 
@@ -465,7 +466,7 @@ function _readFormInputs(form) {
     electronicsSmall: parseFloat(fd.get('electronicsSmall'))|| 0,
     note:             document.getElementById('journal-note')?.value?.trim() || '',
   };
-  // Sanitise all numeric inputs — rejects nonsensical values (negatives, strings, out-of-range)
+  // Sanitise all numeric inputs â€” rejects nonsensical values (negatives, strings, out-of-range)
   return sanitiseLogInputs(raw);
 }
 
@@ -477,7 +478,7 @@ function _updateLiveCalcs(profile) {
 
   const setLive = (id, val) => {
     const el = document.getElementById(id);
-    if (el) el.textContent = `~ ${val.toFixed(1)} kg CO₂e`;
+    if (el) el.textContent = `~ ${val.toFixed(1)} kg COâ‚‚e`;
   };
   setLive('transport-live',   totals.transport);
   setLive('food-live',        totals.food);
@@ -489,13 +490,14 @@ function _updateLiveCalcs(profile) {
   const lf = inputs.longFlightKm  || 0;
   const flightKg = sf * EMISSION_FACTORS.transport.flight_short + lf * EMISSION_FACTORS.transport.flight_long;
   const flightEl = document.getElementById('flight-live');
-  if (flightEl) flightEl.textContent = `~ ${flightKg.toFixed(1)} kg CO₂e from flights`;
+  if (flightEl) flightEl.textContent = `~ ${flightKg.toFixed(1)} kg COâ‚‚e from flights`;
 
   const totalEl = document.getElementById('total-live');
   if (totalEl) {
-    totalEl.textContent = `~ ${totals.total.toFixed(1)} kg CO₂e`;
+    totalEl.textContent = `~ ${totals.total.toFixed(1)} kg COâ‚‚e`;
     // Color-code vs Paris budget
     const parisBudget = 5.5;
     totalEl.className = 'total-value ' + (totals.total > parisBudget * 2 ? 'val-high' : totals.total > parisBudget ? 'val-medium' : 'val-low');
   }
 }
+

@@ -1,8 +1,9 @@
+﻿"use strict";
 /**
  * validation.js
  * =============
  * Input validation and sanitisation for all user-supplied values.
- * Called by activityLogger.js before computing CO₂e totals.
+ * Called by activityLogger.js before computing COâ‚‚e totals.
  *
  * SECURITY NOTES:
  *   - All numeric inputs are clamped to realistic ranges to prevent
@@ -12,9 +13,9 @@
  *   - Strings are trimmed to avoid whitespace-only inputs being treated as valid.
  */
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // ALLOWED VALUES (whitelist approach for string fields)
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const ALLOWED_TRANSPORT_MODES = new Set([
   'car', 'ev', 'motorbike', 'bus', 'train', 'bike', 'walk', 'rideshare'
@@ -26,9 +27,9 @@ const ALLOWED_ENERGY_TYPES = new Set(['grid', 'renewable', 'unsure']);
 
 const ALLOWED_DIET_PATTERNS = new Set(['meat_heavy', 'moderate', 'vegetarian', 'vegan']);
 
-// ─────────────────────────────────────────────────────────────────
-// NUMERIC FIELD BOUNDS (min, max — inclusive)
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// NUMERIC FIELD BOUNDS (min, max â€” inclusive)
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export const FIELD_BOUNDS = {
   distanceKm:       { min: 0,   max: 1000 }, // 1000 km/day is an extreme road trip, realistic ceiling
@@ -45,9 +46,9 @@ export const FIELD_BOUNDS = {
   householdSize:    { min: 1,   max: 20   },
 };
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // VALIDATORS
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Clamp a number to [min, max]. Returns 0 if not a finite number.
@@ -90,7 +91,7 @@ export function sanitiseCarFuelType(fuelType) {
 
 /**
  * Validate an energy type string.
- * Falls back to 'unsure' — the safest/most conservative option.
+ * Falls back to 'unsure' â€” the safest/most conservative option.
  *
  * @param {string} energyType
  * @returns {string}
@@ -130,7 +131,7 @@ export function sanitiseName(name) {
  * Validate and sanitise all form inputs in one call.
  * Returns a clean, safe inputs object ready for calculation.
  *
- * @param {Object} raw — raw form inputs
+ * @param {Object} raw â€” raw form inputs
  * @returns {Object} sanitised inputs
  */
 export function sanitiseLogInputs(raw) {
@@ -150,3 +151,4 @@ export function sanitiseLogInputs(raw) {
     electronicsSmall: clampNumber(raw.electronicsSmall, FIELD_BOUNDS.electronicsSmall.min, FIELD_BOUNDS.electronicsSmall.max),
   };
 }
+

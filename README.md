@@ -39,6 +39,33 @@ The product is designed around one promise: **a 30-second daily check-in, not a 
 
 ---
 
+## 🏆 Hackathon Submission Details
+
+To directly address the evaluation criteria for **Problem Statement Alignment**:
+
+### 1. Chosen Vertical
+**Persona:** Environmentally conscious individual seeking actionable insights without complexity.
+**Logic:** Most footprint calculators are overwhelming one-off questionnaires that cause fatigue. CarbonLite is designed for *daily retention*—a 30-second logger that uses transparent, rule-based logic (not black-box AI) to deliver exactly *one* highly targeted behavioural nudge per day based on real data.
+
+### 2. Approach and Logic
+- **No Black Boxes:** All calculations use static, transparent emission factors (e.g., DEFRA 2023, IEA) exposed in a single file (`src/data/emissionFactors.js`).
+- **Context-Aware:** The onboarding asks for the user's country. The engine dynamically changes the electricity emission factor (e.g., 0.708 kg/kWh for India vs 0.011 kg/kWh for Norway), ensuring insights aren't based on inaccurate global averages.
+- **Rule-Based Insights:** The `insightsEngine.js` analyses the current day's log against a 7-day rolling average to identify the most deviant category, then issues a deduplicated, contextually relevant nudge.
+
+### 3. How the Solution Works
+1. **Onboarding:** Sets a baseline (diet type, commute distance, household size, country grid intensity).
+2. **Daily Logger:** A fast, form-based input that calculates emissions live as you type.
+3. **What-If Simulator:** Interactive sliders allowing users to visualise the *annualised* CO₂e savings of lifestyle changes (e.g., swapping 3 meat meals a week, switching to renewable energy).
+4. **Data Sovereignty:** 100% Offline-first Progressive Web App (PWA). All data lives in `localStorage`. Zero API calls, no signups, no trackers.
+
+### 4. Assumptions Made
+- We assume the user logs data once per day; multiple logs on the same day overwrite previous entries.
+- Emission factors are based on standard global/UK averages (except electricity, which uses country-specific grid intensity).
+- "A meal" is approximated at ~600 kcal for baseline dietary calculations.
+- Long-haul flights are tracked as periodic "one-off" events outside the standard daily commute logic.
+
+---
+
 ## 2. How the Solution Works — User Journey
 
 ```

@@ -1,26 +1,27 @@
+﻿"use strict";
 /**
  * challenges.js
  * =============
- * Weekly challenge mode — one rotating challenge per ISO week.
+ * Weekly challenge mode â€” one rotating challenge per ISO week.
  * Tracks daily progress using existing daily log data (no extra storage needed).
  */
 
 import { loadRecentLogs } from './storage.js';
 
-// ─── Challenge bank ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Challenge bank â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const CHALLENGES = [
   {
     id: 'CAR_FREE',
-    icon: '🚗',
+    icon: 'ðŸš—',
     name: 'Car-Free Week',
     category: 'transport',
     color: '#4ecdc4',
     desc: 'Avoid cars, motorbikes, and rideshares for 5 out of 7 days this week.',
     target: 5,
     unit: 'car-free days',
-    savingNote: 'A car-free day saves 2–4 kg CO₂e depending on your usual commute.',
-    reward: '🌿 Zero-Wheels Badge',
+    savingNote: 'A car-free day saves 2â€“4 kg COâ‚‚e depending on your usual commute.',
+    reward: 'ðŸŒ¿ Zero-Wheels Badge',
     /** @param {Object|null} log */
     checkDay(log) {
       if (!log) return null;
@@ -31,15 +32,15 @@ const CHALLENGES = [
   },
   {
     id: 'PLANT_WEEK',
-    icon: '🥦',
+    icon: 'ðŸ¥¦',
     name: 'Plant-Based Week',
     category: 'food',
     color: '#12d98a',
     desc: 'Eat only vegetarian or vegan meals for 5 out of 7 days this week.',
     target: 5,
     unit: 'plant-based days',
-    savingNote: 'Replacing all meat saves ~5.3 kg CO₂e per day on average.',
-    reward: '🌱 Green Plate Badge',
+    savingNote: 'Replacing all meat saves ~5.3 kg COâ‚‚e per day on average.',
+    reward: 'ðŸŒ± Green Plate Badge',
     checkDay(log) {
       if (!log) return null;
       return ((log.food?.meatMeals || 0) + (log.food?.poultryMeals || 0)) === 0;
@@ -47,15 +48,15 @@ const CHALLENGES = [
   },
   {
     id: 'ENERGY_SAVER',
-    icon: '⚡',
+    icon: 'âš¡',
     name: 'Energy Saver',
     category: 'energy',
     color: '#ffd93d',
     desc: 'Keep AC/heating under 3 hours per day for 5 out of 7 days.',
     target: 5,
     unit: 'low-energy days',
-    savingNote: 'Each hour of AC skipped saves ~0.65 kg CO₂e (1.5 kW unit on grid avg).',
-    reward: '💡 Watt Watcher Badge',
+    savingNote: 'Each hour of AC skipped saves ~0.65 kg COâ‚‚e (1.5 kW unit on grid avg).',
+    reward: 'ðŸ’¡ Watt Watcher Badge',
     checkDay(log) {
       if (!log) return null;
       return (log.energy?.acHours || 0) <= 3;
@@ -63,15 +64,15 @@ const CHALLENGES = [
   },
   {
     id: 'NO_BUY',
-    icon: '🛍️',
+    icon: 'ðŸ›ï¸',
     name: 'No-Buy Week',
     category: 'consumption',
     color: '#a78bfa',
     desc: 'Zero online orders and zero new purchases for 5 out of 7 days.',
     target: 5,
     unit: 'no-buy days',
-    savingNote: 'A no-buy week can prevent 10–60 kg CO₂e depending on your usual habits.',
-    reward: '🏅 Mindful Consumer Badge',
+    savingNote: 'A no-buy week can prevent 10â€“60 kg COâ‚‚e depending on your usual habits.',
+    reward: 'ðŸ… Mindful Consumer Badge',
     checkDay(log) {
       if (!log) return null;
       return (
@@ -83,15 +84,15 @@ const CHALLENGES = [
   },
   {
     id: 'COOK_HOME',
-    icon: '🍳',
+    icon: 'ðŸ³',
     name: 'Cook At Home',
     category: 'food',
     color: '#ff9f43',
     desc: 'Avoid food delivery orders for 5 out of 7 days this week.',
     target: 5,
     unit: 'home-cooked days',
-    savingNote: 'Each skipped delivery avoids ~0.7 kg CO₂e in packaging + last-mile transport.',
-    reward: '👨‍🍳 Home Chef Badge',
+    savingNote: 'Each skipped delivery avoids ~0.7 kg COâ‚‚e in packaging + last-mile transport.',
+    reward: 'ðŸ‘¨â€ðŸ³ Home Chef Badge',
     checkDay(log) {
       if (!log) return null;
       return (log.food?.deliveryOrders || 0) === 0;
@@ -99,8 +100,12 @@ const CHALLENGES = [
   },
 ];
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+/**
+ * Determines the current active challenge index based on the current ISO week.
+ * @returns {number} The index of the active challenge in the CHALLENGES array
+ */
 function _getActiveChallengeIndex() {
   const ref    = new Date('2024-01-01T00:00:00Z');
   const now    = new Date();
@@ -108,8 +113,12 @@ function _getActiveChallengeIndex() {
   return weeks % CHALLENGES.length;
 }
 
+/**
+ * Generates an array of ISO date strings for the current calendar week (Monday to Sunday).
+ * @returns {string[]} Array of 7 ISO date strings (YYYY-MM-DD)
+ */
 function _getWeekDates() {
-  // Returns ISO date strings Mon–Sun for the current calendar week
+  // Returns ISO date strings Monâ€“Sun for the current calendar week
   const today  = new Date();
   const dow    = today.getDay();                // 0 = Sunday
   const offset = dow === 0 ? -6 : 1 - dow;    // shift to Monday
@@ -120,8 +129,11 @@ function _getWeekDates() {
   });
 }
 
-// ─── Main render ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Main render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+/**
+ * Renders the Weekly Challenges view, calculating progress against the current week's logs.
+ */
 export function renderChallenges() {
   const section = document.getElementById('challenges-section');
   if (!section) return;
@@ -159,7 +171,7 @@ export function renderChallenges() {
           </div>
         </div>
         <div class="challenge-hero-body">
-          <span class="challenge-week-tag">🗓️ This Week's Challenge</span>
+          <span class="challenge-week-tag">ðŸ—“ï¸ This Week's Challenge</span>
           <h2 class="challenge-hero-title">${challenge.name}</h2>
           <p class="challenge-hero-desc">${challenge.desc}</p>
 
@@ -178,10 +190,10 @@ export function renderChallenges() {
           <div class="challenge-days">
             ${dayResults.map(dr => {
               let cls, symbol;
-              if (!dr.isPast)       { cls = 'future';    symbol = '·'; }
+              if (!dr.isPast)       { cls = 'future';    symbol = 'Â·'; }
               else if (!dr.log)     { cls = 'unlogged';  symbol = '?'; }
-              else if (dr.result)   { cls = 'pass';      symbol = '✓'; }
-              else                  { cls = 'fail';      symbol = '✗'; }
+              else if (dr.result)   { cls = 'pass';      symbol = 'âœ“'; }
+              else                  { cls = 'fail';      symbol = 'âœ—'; }
               return `
                 <div class="challenge-day-wrap ${dr.isToday ? 'is-today' : ''}" aria-label="${dr.dayName}: ${cls}">
                   <div class="challenge-day-dot ${cls}"
@@ -196,18 +208,18 @@ export function renderChallenges() {
           </div>
 
           <div class="challenge-foot">
-            <span class="challenge-saving-note">💡 ${challenge.savingNote}</span>
+            <span class="challenge-saving-note">ðŸ’¡ ${challenge.savingNote}</span>
             ${completed
-              ? `<div class="challenge-reward-badge earned">${challenge.reward} 🎉</div>`
+              ? `<div class="challenge-reward-badge earned">${challenge.reward} ðŸŽ‰</div>`
               : `<div class="challenge-reward-badge locked">Earn: ${challenge.reward}</div>`}
           </div>
         </div>
-        ${completed ? `<div class="challenge-complete-seal">🏆<br><small>Complete!</small></div>` : ''}
+        ${completed ? `<div class="challenge-complete-seal">ðŸ†<br><small>Complete!</small></div>` : ''}
       </div>
 
       <!-- All challenges -->
       <div class="challenges-all-card glass-card">
-        <h3 class="challenges-all-title">🔄 All challenges (rotating weekly)</h3>
+        <h3 class="challenges-all-title">ðŸ”„ All challenges (rotating weekly)</h3>
         <p class="challenges-all-sub">Each Monday a new challenge begins. Build habits one week at a time.</p>
         <div class="challenges-rotation-list">
           ${CHALLENGES.map(c => `
@@ -215,7 +227,7 @@ export function renderChallenges() {
               <span class="rotation-icon">${c.icon}</span>
               <div class="rotation-info">
                 <strong>${c.name}</strong>
-                <span>${c.desc.substring(0, 60)}…</span>
+                <span>${c.desc.substring(0, 60)}â€¦</span>
               </div>
               <div class="rotation-meta">
                 <span class="rotation-reward">${c.reward}</span>
@@ -229,3 +241,4 @@ export function renderChallenges() {
     </div>
   `;
 }
+

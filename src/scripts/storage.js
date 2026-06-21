@@ -1,3 +1,4 @@
+﻿"use strict";
 /**
  * storage.js
  * ==========
@@ -5,11 +6,11 @@
  * No other module should call localStorage directly.
  *
  * Keys used:
- *   CF_PROFILE        — onboarding baseline profile
- *   CF_LOGS           — array of daily activity logs
- *   CF_SUGGESTIONS    — history of suggestion IDs shown this week
- *   CF_GOAL           — user's weekly reduction goal (%)
- *   CF_SEEN_ONBOARDING — boolean flag
+ *   CF_PROFILE        â€” onboarding baseline profile
+ *   CF_LOGS           â€” array of daily activity logs
+ *   CF_SUGGESTIONS    â€” history of suggestion IDs shown this week
+ *   CF_GOAL           â€” user's weekly reduction goal (%)
+ *   CF_SEEN_ONBOARDING â€” boolean flag
  */
 
 const KEYS = {
@@ -22,9 +23,9 @@ const KEYS = {
   CHALLENGES:     'CF_CHALLENGES',     // current challenge override (reserved for future)
 };
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Internal helpers
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function read(key) {
   try {
@@ -44,19 +45,19 @@ function write(key, value) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Profile
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Save the user's onboarding profile.
  * @param {Object} profile
- * @param {string} profile.commuteMode     — 'car'|'ev'|'bus'|'train'|'bike'|'walk'|'motorbike'
- * @param {string} profile.carFuelType     — 'petrol'|'diesel'|'hybrid'|'ev' (only if commuteMode='car')
- * @param {string} profile.dietPattern     — 'meat_heavy'|'moderate'|'vegetarian'|'vegan'
- * @param {string} profile.energyType      — 'grid'|'renewable'|'unsure'
- * @param {number} profile.householdSize   — number of people sharing home energy
- * @param {string} profile.name            — optional first name for personalisation
+ * @param {string} profile.commuteMode     â€” 'car'|'ev'|'bus'|'train'|'bike'|'walk'|'motorbike'
+ * @param {string} profile.carFuelType     â€” 'petrol'|'diesel'|'hybrid'|'ev' (only if commuteMode='car')
+ * @param {string} profile.dietPattern     â€” 'meat_heavy'|'moderate'|'vegetarian'|'vegan'
+ * @param {string} profile.energyType      â€” 'grid'|'renewable'|'unsure'
+ * @param {number} profile.householdSize   â€” number of people sharing home energy
+ * @param {string} profile.name            â€” optional first name for personalisation
  */
 export function saveProfile(profile) {
   write(KEYS.PROFILE, { ...profile, savedAt: new Date().toISOString() });
@@ -74,21 +75,21 @@ export function markOnboardingComplete() {
   write(KEYS.SEEN_ONBOARDING, true);
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Activity Logs
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Append a daily log entry. Each log has a dateKey (YYYY-MM-DD) as its identifier.
  * If a log already exists for today, it is replaced (one log per day).
  *
  * @param {Object} log
- * @param {string} log.date        — ISO date string YYYY-MM-DD
- * @param {Object} log.transport   — { mode, subtype, distanceKm }
- * @param {Object} log.food        — { meatMeals, vegMeals, veganMeals, deliveryOrders }
- * @param {Object} log.energy      — { acHours, heatingHours, electricityKwh }
- * @param {Object} log.consumption — { parcels, clothingItems, electronics }
- * @param {Object} log.totals      — { transport, food, energy, consumption, total } in kg CO2e
+ * @param {string} log.date        â€” ISO date string YYYY-MM-DD
+ * @param {Object} log.transport   â€” { mode, subtype, distanceKm }
+ * @param {Object} log.food        â€” { meatMeals, vegMeals, veganMeals, deliveryOrders }
+ * @param {Object} log.energy      â€” { acHours, heatingHours, electricityKwh }
+ * @param {Object} log.consumption â€” { parcels, clothingItems, electronics }
+ * @param {Object} log.totals      â€” { transport, food, energy, consumption, total } in kg CO2e
  */
 export function saveLog(log) {
   const logs = read(KEYS.LOGS) || [];
@@ -124,9 +125,9 @@ export function loadTodayLog() {
   return logs.find(l => l.date === today) || null;
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Suggestion History (to avoid repeating tips in the same week)
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Record that a suggestion ID was shown today.
@@ -136,7 +137,7 @@ export function recordSuggestionShown(suggestionId) {
   const history = read(KEYS.SUGGESTIONS) || { weekStart: _currentWeekStart(), ids: [] };
   const thisWeek = _currentWeekStart();
   if (history.weekStart !== thisWeek) {
-    // New week — reset
+    // New week â€” reset
     write(KEYS.SUGGESTIONS, { weekStart: thisWeek, ids: [suggestionId] });
     return;
   }
@@ -160,13 +161,13 @@ function _currentWeekStart() {
   return d.toISOString().slice(0, 10);
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Goal
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Save the user's weekly reduction goal.
- * @param {number} percent — e.g. 10 means "reduce by 10%"
+ * @param {number} percent â€” e.g. 10 means "reduce by 10%"
  */
 export function saveGoal(percent) {
   write(KEYS.GOAL, { percent, savedAt: new Date().toISOString() });
@@ -176,13 +177,13 @@ export function loadGoal() {
   return read(KEYS.GOAL);
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Special Events (one-off flights, road trips, etc.)
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Save a one-off event (flight, cruise, road trip).
- * @param {Object} event — { date, type, description, kg, distanceKm }
+ * @param {Object} event â€” { date, type, description, kg, distanceKm }
  */
 export function saveEvent(event) {
   const events = read(KEYS.EVENTS) || [];
@@ -204,7 +205,7 @@ export function loadRecentEvents(days = 90) {
 
 /**
  * Update the 'note' field of an existing day's log.
- * @param {string} date — YYYY-MM-DD
+ * @param {string} date â€” YYYY-MM-DD
  * @param {string} note
  */
 export function saveJournalNote(date, note) {
@@ -216,10 +217,11 @@ export function saveJournalNote(date, note) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Utility: clear all data (for settings/reset)
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function clearAllData() {
   Object.values(KEYS).forEach(k => localStorage.removeItem(k));
 }
+

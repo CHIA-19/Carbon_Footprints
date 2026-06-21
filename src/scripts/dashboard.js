@@ -1,3 +1,4 @@
+﻿"use strict";
 /**
  * dashboard.js
  * ============
@@ -12,11 +13,11 @@ import { generateGoalNudge } from './insightsEngine.js';
 let weeklyChartInstance = null;
 let donutChartInstance  = null;
 
-// ─── MAIN RENDER ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ MAIN RENDER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Render the full dashboard into #dashboard-section.
- * @param {Object} profile — user baseline profile
+ * @param {Object} profile â€” user baseline profile
  */
 export function renderDashboard(profile) {
   const section = document.getElementById('dashboard-section');
@@ -34,20 +35,20 @@ export function renderDashboard(profile) {
   section.innerHTML = `
     <div class="dashboard-grid">
 
-      <!-- ── Goal nudge banner ── -->
+      <!-- â”€â”€ Goal nudge banner â”€â”€ -->
       ${_renderGoalBanner(weekLogs, profile, goal)}
 
-      <!-- ── This week at a glance ── -->
+      <!-- â”€â”€ This week at a glance â”€â”€ -->
       <div class="dash-card glass-card span-2" id="today-summary-card">
-        <h3 class="dash-card-title">📊 This Week at a Glance</h3>
+        <h3 class="dash-card-title">ðŸ“Š This Week at a Glance</h3>
         <div class="kpi-row">
           <div class="kpi-item">
             <span class="kpi-value">${stats.weekTotal.toFixed(1)}</span>
-            <span class="kpi-label">kg CO₂e this week</span>
+            <span class="kpi-label">kg COâ‚‚e this week</span>
           </div>
           <div class="kpi-item">
             <span class="kpi-value">${stats.dailyAvg.toFixed(1)}</span>
-            <span class="kpi-label">kg CO₂e daily avg</span>
+            <span class="kpi-label">kg COâ‚‚e daily avg</span>
           </div>
           <div class="kpi-item ${stats.vsParisClass}">
             <span class="kpi-value">${stats.vsParis}</span>
@@ -59,17 +60,17 @@ export function renderDashboard(profile) {
           </div>
         </div>
         <div class="equivalences">
-          <div class="equiv-item">🚗 ≈ driving <strong>${stats.carKmEquiv.toFixed(0)} km</strong></div>
-          <div class="equiv-item">🌳 ≈ <strong>${stats.treeDays.toFixed(0)} days</strong> of tree absorption</div>
-          <div class="equiv-item">📱 ≈ <strong>${stats.phoneCharges.toFixed(0)}</strong> smartphone charges</div>
+          <div class="equiv-item">ðŸš— â‰ˆ driving <strong>${stats.carKmEquiv.toFixed(0)} km</strong></div>
+          <div class="equiv-item">ðŸŒ³ â‰ˆ <strong>${stats.treeDays.toFixed(0)} days</strong> of tree absorption</div>
+          <div class="equiv-item">ðŸ“± â‰ˆ <strong>${stats.phoneCharges.toFixed(0)}</strong> smartphone charges</div>
         </div>
-        <p class="methodology-note"><a href="#" id="open-methodology-link">ℹ️ How we calculate this (estimates only)</a></p>
+        <p class="methodology-note"><a href="#" id="open-methodology-link">â„¹ï¸ How we calculate this (estimates only)</a></p>
       </div>
 
-      <!-- ── 7/30-day bar chart ── -->
+      <!-- â”€â”€ 7/30-day bar chart â”€â”€ -->
       <div class="dash-card glass-card" id="chart-card">
         <div class="dash-card-title-row">
-          <h3 class="dash-card-title">📈 Daily CO₂e History</h3>
+          <h3 class="dash-card-title">ðŸ“ˆ Daily COâ‚‚e History</h3>
           <div class="chart-period-toggle" role="group" aria-label="Chart period toggle">
             <button class="chart-period-btn active" id="chart-7d-btn" aria-pressed="true">7 days</button>
             <button class="chart-period-btn" id="chart-30d-btn" aria-pressed="false">30 days</button>
@@ -86,16 +87,16 @@ export function renderDashboard(profile) {
         </div>
       </div>
 
-      <!-- ── Category donut ── -->
+      <!-- â”€â”€ Category donut â”€â”€ -->
       <div class="dash-card glass-card">
-        <h3 class="dash-card-title">🍩 Breakdown by Category</h3>
+        <h3 class="dash-card-title">ðŸ© Breakdown by Category</h3>
         ${weekLogs.length === 0
           ? '<p class="empty-state">Log a day to see your breakdown!</p>'
           : `<div class="chart-wrap donut-wrap">
               <canvas id="donut-chart"></canvas>
               <div class="donut-centre">
                 <span class="donut-total">${stats.weekTotal.toFixed(1)}</span>
-                <span class="donut-unit">kg CO₂e</span>
+                <span class="donut-unit">kg COâ‚‚e</span>
               </div>
             </div>`
         }
@@ -104,29 +105,29 @@ export function renderDashboard(profile) {
         </div>
       </div>
 
-      <!-- ── Calendar heatmap ── -->
+      <!-- â”€â”€ Calendar heatmap â”€â”€ -->
       <div class="dash-card glass-card span-2" id="heatmap-card">
-        <h3 class="dash-card-title">🗓️ 12-Week Activity Heatmap</h3>
+        <h3 class="dash-card-title">ðŸ—“ï¸ 12-Week Activity Heatmap</h3>
         ${_renderHeatmap(allLogs)}
       </div>
 
-      <!-- ── Goal setting ── -->
+      <!-- â”€â”€ Goal setting â”€â”€ -->
       <div class="dash-card glass-card">
-        <h3 class="dash-card-title">🎯 Weekly Reduction Goal</h3>
+        <h3 class="dash-card-title">ðŸŽ¯ Weekly Reduction Goal</h3>
         <p class="goal-desc">Set a % reduction from the global average (${EMISSION_FACTORS.baselines.global_avg_daily_kg} kg/day baseline).</p>
         <div class="goal-form">
           <label for="goal-slider" class="goal-label">Reduce by <span id="goal-pct-display">${goal?.percent || 10}%</span></label>
           <input type="range" id="goal-slider" min="5" max="50" step="5" value="${goal?.percent || 10}" class="goal-slider">
           <div class="goal-target-preview" id="goal-target-preview">
-            Target: ≤ ${_computeTargetKg(goal?.percent || 10).toFixed(1)} kg/day
+            Target: â‰¤ ${_computeTargetKg(goal?.percent || 10).toFixed(1)} kg/day
           </div>
           <button class="btn-secondary" id="save-goal-btn">Save Goal</button>
         </div>
       </div>
 
-      <!-- ── Streak / Milestones ── -->
+      <!-- â”€â”€ Streak / Milestones â”€â”€ -->
       <div class="dash-card glass-card">
-        <h3 class="dash-card-title">🏅 Milestones</h3>
+        <h3 class="dash-card-title">ðŸ… Milestones</h3>
         <div class="milestones-list">
           ${_renderMilestones(allLogs, stats)}
         </div>
@@ -135,30 +136,30 @@ export function renderDashboard(profile) {
     </div>
   `;
 
-  // ── Charts ──
+  // â”€â”€ Charts â”€â”€
   if (weekLogs.length > 0) {
     _renderWeeklyChart(weekLogs);
     _renderDonutChart(stats.categoryTotals);
   }
 
-  // ── Goal slider ──
+  // â”€â”€ Goal slider â”€â”€
   const goalSlider = document.getElementById('goal-slider');
   goalSlider?.addEventListener('input', () => {
     const pct = parseInt(goalSlider.value);
     document.getElementById('goal-pct-display').textContent = `${pct}%`;
-    document.getElementById('goal-target-preview').textContent = `Target: ≤ ${_computeTargetKg(pct).toFixed(1)} kg/day`;
+    document.getElementById('goal-target-preview').textContent = `Target: â‰¤ ${_computeTargetKg(pct).toFixed(1)} kg/day`;
   });
   document.getElementById('save-goal-btn')?.addEventListener('click', () => {
     const pct = parseInt(goalSlider.value);
     saveGoal(pct);
     const btn = document.getElementById('save-goal-btn');
-    btn.textContent = '✓ Saved!';
+    btn.textContent = 'âœ“ Saved!';
     btn.classList.add('btn-saved');
     setTimeout(() => { btn.textContent = 'Save Goal'; btn.classList.remove('btn-saved'); }, 2000);
     renderDashboard(profile);
   });
 
-  // ── 7d / 30d toggle ──
+  // â”€â”€ 7d / 30d toggle â”€â”€
   document.getElementById('chart-7d-btn')?.addEventListener('click', () => {
     document.getElementById('chart-7d-btn').classList.add('active');
     document.getElementById('chart-7d-btn').setAttribute('aria-pressed', 'true');
@@ -176,15 +177,19 @@ export function renderDashboard(profile) {
     _renderWeeklyChart(loadRecentLogs(30));
   });
 
-  // ── Methodology link ──
+  // â”€â”€ Methodology link â”€â”€
   document.getElementById('open-methodology-link')?.addEventListener('click', e => {
     e.preventDefault();
     window.showMethodologyModal?.();
   });
 }
 
-// ─── CHART RENDERERS ──────────────────────────────────────────────────────────
+// â”€â”€â”€ CHART RENDERERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+/**
+ * Renders the weekly bar chart showing daily COâ‚‚e history.
+ * @param {Array} logs - Array of daily log objects
+ */
 function _renderWeeklyChart(logs) {
   const ctx = document.getElementById('weekly-chart')?.getContext('2d');
   if (!ctx || logs.length === 0) return;
@@ -200,7 +205,7 @@ function _renderWeeklyChart(logs) {
     data: {
       labels,
       datasets: [{
-        label: 'Daily CO₂e (kg)',
+        label: 'Daily COâ‚‚e (kg)',
         data,
         backgroundColor: data.map(v =>
           v > EMISSION_FACTORS.baselines.global_avg_daily_kg  ? 'rgba(255,107,107,0.7)'
@@ -221,7 +226,7 @@ function _renderWeeklyChart(logs) {
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: c => `~ ${c.parsed.y.toFixed(1)} kg CO₂e` } },
+        tooltip: { callbacks: { label: c => `~ ${c.parsed.y.toFixed(1)} kg COâ‚‚e` } },
         annotation: {
           annotations: {
             parisLine: { type: 'line', yMin: EMISSION_FACTORS.baselines.paris_target_daily_kg, yMax: EMISSION_FACTORS.baselines.paris_target_daily_kg, borderColor: '#12d98a', borderWidth: 1, borderDash: [6,4] },
@@ -237,6 +242,10 @@ function _renderWeeklyChart(logs) {
   });
 }
 
+/**
+ * Renders the donut chart showing the breakdown of emissions by category.
+ * @param {Object} categoryTotals - Object containing transport, food, energy, consumption totals
+ */
 function _renderDonutChart(categoryTotals) {
   const ctx = document.getElementById('donut-chart')?.getContext('2d');
   if (!ctx) return;
@@ -245,12 +254,17 @@ function _renderDonutChart(categoryTotals) {
   donutChartInstance = new Chart(ctx, {
     type: 'doughnut',
     data: { labels: ['Transport','Food','Energy','Shopping'], datasets: [{ data, backgroundColor: colors.map(c => c+'cc'), borderColor: colors, borderWidth: 2, hoverOffset: 8 }] },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.label}: ~ ${c.parsed.toFixed(1)} kg CO₂e` } } } }
+    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.label}: ~ ${c.parsed.toFixed(1)} kg COâ‚‚e` } } } }
   });
 }
 
-// ─── HEATMAP ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ HEATMAP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+/**
+ * Renders a 12-week GitHub-style activity heatmap of daily emissions.
+ * @param {Array} allLogs - Array of all historical daily log objects
+ * @returns {string} HTML string for the heatmap component
+ */
 function _renderHeatmap(allLogs) {
   const today  = new Date();
   const logMap = {};
@@ -259,7 +273,7 @@ function _renderHeatmap(allLogs) {
   const paris  = EMISSION_FACTORS.baselines.paris_target_daily_kg;
   const global = EMISSION_FACTORS.baselines.global_avg_daily_kg;
 
-  // Build 84 cells (12 weeks × 7 days), ending today
+  // Build 84 cells (12 weeks Ã— 7 days), ending today
   const cells = [];
   for (let i = 83; i >= 0; i--) {
     const d = new Date(today);
@@ -294,8 +308,8 @@ function _renderHeatmap(allLogs) {
               ${week.map(cell => `
                 <div class="heatmap-cell"
                      style="background:${cellColor(cell.log)}"
-                     title="${cell.dateStr}${cell.log ? ': ~' + (cell.log.totals?.total || 0).toFixed(1) + ' kg CO₂e' + (cell.log.note ? ' · ' + cell.log.note : '') : ' (no log)'}"
-                     aria-label="${cell.dateStr}${cell.log ? ': ~' + (cell.log.totals?.total || 0).toFixed(1) + ' kg CO₂e' + (cell.log.note ? ' · ' + cell.log.note : '') : ' (no log)'}">
+                     title="${cell.dateStr}${cell.log ? ': ~' + (cell.log.totals?.total || 0).toFixed(1) + ' kg COâ‚‚e' + (cell.log.note ? ' Â· ' + cell.log.note : '') : ' (no log)'}"
+                     aria-label="${cell.dateStr}${cell.log ? ': ~' + (cell.log.totals?.total || 0).toFixed(1) + ' kg COâ‚‚e' + (cell.log.note ? ' Â· ' + cell.log.note : '') : ' (no log)'}">
                 </div>
               `).join('')}
             </div>
@@ -303,18 +317,24 @@ function _renderHeatmap(allLogs) {
         </div>
       </div>
       <div class="heatmap-legend">
-        <span class="heatmap-leg"><span class="heatmap-leg-dot" style="background:rgba(18,217,138,0.82)"></span>≤ Paris (5.5 kg)</span>
+        <span class="heatmap-leg"><span class="heatmap-leg-dot" style="background:rgba(18,217,138,0.82)"></span>â‰¤ Paris (5.5 kg)</span>
         <span class="heatmap-leg"><span class="heatmap-leg-dot" style="background:rgba(255,193,7,0.82)"></span>Below global avg</span>
         <span class="heatmap-leg"><span class="heatmap-leg-dot" style="background:rgba(255,107,107,0.82)"></span>Above global avg</span>
         <span class="heatmap-leg"><span class="heatmap-leg-dot" style="background:rgba(255,255,255,0.08)"></span>Not logged</span>
       </div>
-      <p class="heatmap-tip">💡 Hover over a cell to see the date and your emissions</p>
+      <p class="heatmap-tip">ðŸ’¡ Hover over a cell to see the date and your emissions</p>
     </div>
   `;
 }
 
-// ─── STATS COMPUTATION ───────────────────────────────────────────────────────
+// â”€â”€â”€ STATS COMPUTATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+/**
+ * Computes weekly aggregate statistics, daily averages, and equivalents.
+ * @param {Array} weekLogs - Logs from the current week
+ * @param {Array} allLogs - All historical logs (for streak calculation)
+ * @returns {Object} Computed statistics object
+ */
 function _computeStats(weekLogs, allLogs) {
   const cats = ['transport','food','energy','consumption'];
   const categoryTotals = { transport:0, food:0, energy:0, consumption:0 };
@@ -337,6 +357,12 @@ function _computeStats(weekLogs, allLogs) {
   return { weekTotal, dailyAvg, categoryTotals, vsParis, vsParisClass, carKmEquiv, treeDays, phoneCharges, streak: streak.count, streakLabel: streak.label, streakClass: streak.count > 0 ? 'kpi-item--good' : '' };
 }
 
+/**
+ * Calculates the consecutive number of days the user has been under their benchmark.
+ * @param {Array} allLogs - All historical logs
+ * @param {number} benchmark - The daily target or average to beat
+ * @returns {Object} Object containing count and label
+ */
 function _computeStreak(allLogs, benchmark) {
   if (allLogs.length === 0) return { count: 0, label: 'days logged' };
   let streak = 0;
@@ -346,15 +372,15 @@ function _computeStreak(allLogs, benchmark) {
     else break;
   }
   if (streak === 0) return { count: allLogs.length, label: 'days logged total' };
-  return { count: streak, label: streak === 1 ? 'day under your average' : 'days under your average 🔥' };
+  return { count: streak, label: streak === 1 ? 'day under your average' : 'days under your average ðŸ”¥' };
 }
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ HELPERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function _renderGoalBanner(weekLogs, profile, goal) {
   if (!goal || weekLogs.length === 0) {
     return `<div class="goal-banner glass-card span-full">
-      <span class="goal-banner-icon">🎯</span>
+      <span class="goal-banner-icon">ðŸŽ¯</span>
       <span>Set a weekly goal below to track your progress here.</span>
     </div>`;
   }
@@ -362,10 +388,10 @@ function _renderGoalBanner(weekLogs, profile, goal) {
   if (!nudge) return '';
   return `
     <div class="goal-banner glass-card span-full ${nudge.onTrack ? 'goal-banner--good' : 'goal-banner--warn'}">
-      <span class="goal-banner-icon">${nudge.onTrack ? '✅' : '📊'}</span>
+      <span class="goal-banner-icon">${nudge.onTrack ? 'âœ…' : 'ðŸ“Š'}</span>
       <div>
         <p>${nudge.sentence}</p>
-        ${nudge.leverTip ? `<p class="goal-lever-tip">💡 <em>${nudge.leverTip}</em></p>` : ''}
+        ${nudge.leverTip ? `<p class="goal-lever-tip">ðŸ’¡ <em>${nudge.leverTip}</em></p>` : ''}
       </div>
     </div>
   `;
@@ -373,10 +399,10 @@ function _renderGoalBanner(weekLogs, profile, goal) {
 
 function _renderCategoryBars(totals, weekTotal) {
   const cats = [
-    { key:'transport',   label:'🚗 Transport', color:'#4ecdc4' },
-    { key:'food',        label:'🍽️ Food',       color:'#ffd93d' },
-    { key:'energy',      label:'⚡ Energy',      color:'#ff6b6b' },
-    { key:'consumption', label:'🛍️ Shopping',    color:'#a78bfa' },
+    { key:'transport',   label:'ðŸš— Transport', color:'#4ecdc4' },
+    { key:'food',        label:'ðŸ½ï¸ Food',       color:'#ffd93d' },
+    { key:'energy',      label:'âš¡ Energy',      color:'#ff6b6b' },
+    { key:'consumption', label:'ðŸ›ï¸ Shopping',    color:'#a78bfa' },
   ];
   if (weekTotal === 0) return '<p class="empty-state">No data yet</p>';
   return cats.map(cat => {
@@ -391,12 +417,12 @@ function _renderCategoryBars(totals, weekTotal) {
 
 function _renderMilestones(allLogs, stats) {
   const milestones = [];
-  if (allLogs.length >= 1)  milestones.push({ icon:'📅', text:'First log recorded — you started your journey!' });
-  if (allLogs.length >= 7)  milestones.push({ icon:'🗓️', text:'7 days logged — you\'re building a habit.' });
-  if (allLogs.length >= 30) milestones.push({ icon:'📆', text:'30 days logged — you\'re a carbon-conscious pro.' });
-  if (stats.streak >= 3)    milestones.push({ icon:'🔥', text:`${stats.streak} days under your daily average in a row!` });
+  if (allLogs.length >= 1)  milestones.push({ icon:'ðŸ“…', text:'First log recorded â€” you started your journey!' });
+  if (allLogs.length >= 7)  milestones.push({ icon:'ðŸ—“ï¸', text:'7 days logged â€” you\'re building a habit.' });
+  if (allLogs.length >= 30) milestones.push({ icon:'ðŸ“†', text:'30 days logged â€” you\'re a carbon-conscious pro.' });
+  if (stats.streak >= 3)    milestones.push({ icon:'ðŸ”¥', text:`${stats.streak} days under your daily average in a row!` });
   if (stats.weekTotal < EMISSION_FACTORS.baselines.paris_target_daily_kg * 7) {
-    milestones.push({ icon:'🌍', text:'This week was under the Paris 1.5°C weekly budget. Outstanding!' });
+    milestones.push({ icon:'ðŸŒ', text:'This week was under the Paris 1.5Â°C weekly budget. Outstanding!' });
   }
   if (milestones.length === 0) return '<p class="empty-state">Log a few days to unlock milestones!</p>';
   return milestones.map(m => `<div class="milestone-item"><span class="milestone-icon">${m.icon}</span><span class="milestone-text">${m.text}</span></div>`).join('');
@@ -405,3 +431,4 @@ function _renderMilestones(allLogs, stats) {
 function _computeTargetKg(percent) {
   return EMISSION_FACTORS.baselines.global_avg_daily_kg * (1 - percent / 100);
 }
+
