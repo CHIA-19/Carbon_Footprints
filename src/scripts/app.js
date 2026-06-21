@@ -6,11 +6,16 @@
  * Handles navigation between sections and global UI state.
  */
 
-import { hasCompletedOnboarding, loadProfile, loadRecentLogs, loadTodayLog, clearAllData } from './storage.js';
+import { hasCompletedOnboarding, loadProfile, loadRecentLogs, loadTodayLog, loadAllLogs, clearAllData } from './storage.js';
 import { renderOnboarding } from './onboarding.js';
 import { renderActivityLogger } from './activityLogger.js';
 import { renderDashboard } from './dashboard.js';
 import { generateInsight } from './insightsEngine.js';
+import { renderSimulator } from './simulator.js';
+import { renderChallenges } from './challenges.js';
+
+// Module-level profile cache (enables lazy rendering in navigateTo)
+let _profile = null;
 
 // ─────────────────────────────────────────────────────────────────
 // BOOTSTRAP
@@ -35,6 +40,9 @@ function initApp() {
     }
   });
 
+  // Wire export button
+  document.getElementById('export-btn')?.addEventListener('click', _exportCSV);
+
   // Check onboarding
   if (!hasCompletedOnboarding()) {
     renderOnboarding((profile) => {
@@ -47,6 +55,8 @@ function initApp() {
 }
 
 function onProfileReady(profile) {
+  _profile = profile; // cache for lazy renderers
+
   // Update greeting
   const greet = document.getElementById('hero-greeting');
   if (greet && profile?.name) {
@@ -177,6 +187,10 @@ function navigateTo(view) {
   document.querySelectorAll('[data-nav]').forEach(btn => {
     btn.classList.toggle('nav-active', btn.dataset.nav === view);
   });
+
+  // Lazy-render new views on each visit (they need fresh log data)
+  if (view === 'simulator')  renderSimulator(_profile);
+  if (view === 'challenges') renderChallenges();
 }
 
 function updateNavBadge() {
@@ -204,4 +218,26 @@ function showMethodologyModal() {
   modal.addEventListener('click', (e) => {
     if (e.target === modal) modal.classList.add('hidden');
   }, { once: true });
+}
+
+// ─────────────────────────────────────────────────────────────────
+// DATA EXPORT (CSV)
+// ─────────────────────────────────────────────────────────────────
+
+function _exportCSV() {
+  const logs = loadAllLogs();
+  if (logs.length === 0) { alert('No data to export yet — log a day first!'); return; }
+  const header = 'Date,Transport(kg),Food(kg),Energy(kg),Shopping(kg),Total(kg),Note\n';
+  const rows = logs.map(l =>
+    `${l.date},${(l.totals?.transport||0).toFixed(3)},${(l.totals?.food||0).toFixed(3)},` +
+    `${(l.totals?.energy||0).toFixed(3)},${(l.totals?.consumption||0).toFixed(3)},` +
+    `${(l.totals?.total||0).toFixed(3)},"${(l.note||'').replace(/"/g, '""')}"`
+  ).join('\n');
+  const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href  = url;
+  link.download = `carbonlite-export-${new Date().toISOString().slice(0,10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
 }

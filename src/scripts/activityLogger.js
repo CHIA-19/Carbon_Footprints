@@ -24,12 +24,14 @@ import { sanitiseLogInputs } from './validation.js';
  * @param {number} distanceKm — distance travelled today in km
  * @returns {number} kg CO₂e
  */
-export function calcTransportEmissions(mode, subtype, distanceKm) {
+export function calcTransportEmissions(mode, subtype, distanceKm, shortFlightKm = 0, longFlightKm = 0) {
   // Defensive clamp: reject negative or non-finite distances
   const d = (isFinite(distanceKm) && distanceKm > 0) ? Math.min(distanceKm, 1000) : 0;
-  if (d <= 0) return 0;
-  const factor = getTransportFactor(mode, subtype);
-  return parseFloat((factor * d).toFixed(3));
+  const sf = (isFinite(shortFlightKm) && shortFlightKm > 0) ? Math.min(shortFlightKm, 15000) : 0;
+  const lf = (isFinite(longFlightKm) && longFlightKm > 0) ? Math.min(longFlightKm, 25000) : 0;
+  const factor = d > 0 ? getTransportFactor(mode, subtype) : 0;
+  const flightEmissions = sf * EMISSION_FACTORS.transport.flight_short + lf * EMISSION_FACTORS.transport.flight_long;
+  return parseFloat((factor * d + flightEmissions).toFixed(3));
 }
 
 /**
@@ -62,9 +64,9 @@ export function calcFoodEmissions(meatMeals, poultryMeals, vegMeals, veganMeals,
  * @param {number} householdSize  — number of people sharing the home (to attribute share)
  * @returns {number} kg CO₂e (user's personal share)
  */
-export function calcEnergyEmissions(acHours, electricityKwh, energyType, householdSize) {
+export function calcEnergyEmissions(acHours, electricityKwh, energyType, householdSize, country = null) {
   const e = EMISSION_FACTORS.energy;
-  const elecFactor = getElectricityFactor(energyType || 'unsure');
+  const elecFactor = getElectricityFactor(energyType || 'unsure', country);
   // householdSize must be at least 1; clamp to realistic range 1–20
   const hh = (isFinite(householdSize) && householdSize >= 1) ? Math.min(Math.floor(householdSize), 20) : 1;
   const ac  = (isFinite(acHours) && acHours > 0) ? Math.min(acHours, 24) : 0;
@@ -98,9 +100,9 @@ export function calcConsumptionEmissions(parcels, clothingItems, electronicsSmal
  * @returns {Object} totals — { transport, food, energy, consumption, total } in kg CO₂e
  */
 export function calculateDayTotals(inputs, profile) {
-  const transport   = calcTransportEmissions(inputs.transportMode, inputs.carFuelType, inputs.distanceKm);
+  const transport   = calcTransportEmissions(inputs.transportMode, inputs.carFuelType, inputs.distanceKm, inputs.shortFlightKm, inputs.longFlightKm);
   const food        = calcFoodEmissions(inputs.meatMeals, inputs.poultryMeals, inputs.vegMeals, inputs.veganMeals, inputs.deliveryOrders);
-  const energy      = calcEnergyEmissions(inputs.acHours, inputs.electricityKwh, profile?.energyType, profile?.householdSize);
+  const energy      = calcEnergyEmissions(inputs.acHours, inputs.electricityKwh, profile?.energyType, profile?.householdSize, profile?.country);
   const consumption = calcConsumptionEmissions(inputs.parcels, inputs.clothingItems, inputs.electronicsSmall);
   const total       = parseFloat((transport + food + energy + consumption).toFixed(3));
   return { transport, food, energy, consumption, total };
@@ -301,6 +303,51 @@ export function renderActivityLogger(profile, onSubmit) {
           <div class="live-calc" id="consumption-live">~ 0.0 kg CO₂e</div>
         </div>
 
+        <!-- ── FLIGHTS (collapsible) ── -->
+        <div class="form-section flight-section">
+          <button type="button" class="flight-toggle-btn" id="flight-toggle">
+            <span class="flight-toggle-icon">✈️</span>
+            <span>Log a flight or long-distance trip today</span>
+            <span class="flight-toggle-arrow" id="flight-arrow">▼</span>
+          </button>
+          <div id="flight-fields" class="flight-fields hidden">
+            <p class="flight-info-note">Flight factors: short-haul 0.255 kg/km, long-haul 0.195 kg/km per passenger (DEFRA 2023)</p>
+            <div class="form-row">
+              <div class="form-field">
+                <label for="short-flight-km">✈️ Short-haul flight (&lt;3h)</label>
+                <div class="stepper-field">
+                  <button type="button" class="stepper-btn" data-target="short-flight-km" data-delta="-200">−</button>
+                  <input type="number" id="short-flight-km" name="shortFlightKm" min="0" max="5000" value="${existingLog?.transport?.shortFlightKm || 0}" placeholder="0">
+                  <button type="button" class="stepper-btn" data-target="short-flight-km" data-delta="200">+</button>
+                </div>
+                <span class="field-unit">km</span>
+              </div>
+              <div class="form-field">
+                <label for="long-flight-km">✈️ Long-haul flight (&gt;3h)</label>
+                <div class="stepper-field">
+                  <button type="button" class="stepper-btn" data-target="long-flight-km" data-delta="-500">−</button>
+                  <input type="number" id="long-flight-km" name="longFlightKm" min="0" max="20000" value="${existingLog?.transport?.longFlightKm || 0}" placeholder="0">
+                  <button type="button" class="stepper-btn" data-target="long-flight-km" data-delta="500">+</button>
+                </div>
+                <span class="field-unit">km</span>
+              </div>
+            </div>
+            <div class="live-calc" id="flight-live">~ 0.0 kg CO₂e from flights</div>
+          </div>
+        </div>
+
+        <!-- ── JOURNAL NOTE ── -->
+        <div class="form-section journal-section">
+          <div class="form-section-header">
+            <span class="category-icon">📓</span>
+            <div>
+              <h3>Today's Note <span class="optional-tag">optional</span></h3>
+              <p>Anything notable about today? Shows as a tooltip in your heatmap.</p>
+            </div>
+          </div>
+          <textarea id="journal-note" class="journal-textarea" rows="2" maxlength="200" placeholder="e.g. 'Took the train instead of driving today!'">${existingLog?.note || ''}</textarea>
+        </div>
+
         <!-- ── TOTAL + SUBMIT ── -->
         <div class="logger-footer">
           <div class="total-preview">
@@ -370,16 +417,27 @@ function _initLoggerInteractions(profile, onSubmit) {
 
     const log = {
       date: today,
-      transport: { mode: inputs.transportMode, subtype: inputs.carFuelType, distanceKm: inputs.distanceKm },
+      transport: { mode: inputs.transportMode, subtype: inputs.carFuelType, distanceKm: inputs.distanceKm, shortFlightKm: inputs.shortFlightKm, longFlightKm: inputs.longFlightKm },
       food: { meatMeals: inputs.meatMeals, poultryMeals: inputs.poultryMeals, vegMeals: inputs.vegMeals, veganMeals: inputs.veganMeals, deliveryOrders: inputs.deliveryOrders },
       energy: { acHours: inputs.acHours, electricityKwh: inputs.electricityKwh },
       consumption: { parcels: inputs.parcels, clothingItems: inputs.clothingItems, electronicsSmall: inputs.electronicsSmall },
+      note: inputs.note || '',
       totals,
       loggedAt: new Date().toISOString(),
     };
 
     saveLog(log);
     onSubmit?.(log);
+  });
+
+  // Flight section toggle
+  document.getElementById('flight-toggle')?.addEventListener('click', () => {
+    const fields = document.getElementById('flight-fields');
+    const arrow  = document.getElementById('flight-arrow');
+    const open   = !fields.classList.contains('hidden');
+    fields.classList.toggle('hidden', open);
+    if (arrow) arrow.textContent = open ? '▼' : '▲';
+    if (!open) _updateLiveCalcs(profile);
   });
 
   // Initial live calc
@@ -393,6 +451,8 @@ function _readFormInputs(form) {
     transportMode:    fd.get('transportMode') || 'car',
     carFuelType:      fd.get('carFuelType')   || 'petrol',
     distanceKm:       parseFloat(fd.get('distanceKm'))      || 0,
+    shortFlightKm:    parseFloat(fd.get('shortFlightKm'))   || 0,
+    longFlightKm:     parseFloat(fd.get('longFlightKm'))    || 0,
     meatMeals:        parseFloat(fd.get('meatMeals'))       || 0,
     poultryMeals:     parseFloat(fd.get('poultryMeals'))    || 0,
     vegMeals:         parseFloat(fd.get('vegMeals'))        || 0,
@@ -403,8 +463,9 @@ function _readFormInputs(form) {
     parcels:          parseFloat(fd.get('parcels'))         || 0,
     clothingItems:    parseFloat(fd.get('clothingItems'))   || 0,
     electronicsSmall: parseFloat(fd.get('electronicsSmall'))|| 0,
+    note:             document.getElementById('journal-note')?.value?.trim() || '',
   };
-  // Sanitise all inputs — rejects nonsensical values (negatives, strings, out-of-range)
+  // Sanitise all numeric inputs — rejects nonsensical values (negatives, strings, out-of-range)
   return sanitiseLogInputs(raw);
 }
 
@@ -422,6 +483,13 @@ function _updateLiveCalcs(profile) {
   setLive('food-live',        totals.food);
   setLive('energy-live',      totals.energy);
   setLive('consumption-live', totals.consumption);
+
+  // Flight live calc
+  const sf = inputs.shortFlightKm || 0;
+  const lf = inputs.longFlightKm  || 0;
+  const flightKg = sf * EMISSION_FACTORS.transport.flight_short + lf * EMISSION_FACTORS.transport.flight_long;
+  const flightEl = document.getElementById('flight-live');
+  if (flightEl) flightEl.textContent = `~ ${flightKg.toFixed(1)} kg CO₂e from flights`;
 
   const totalEl = document.getElementById('total-live');
   if (totalEl) {

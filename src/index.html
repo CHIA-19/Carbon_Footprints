@@ -18,6 +18,13 @@
   <!-- Favicon (inline SVG emoji) -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
 
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#12d98a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <!-- Stylesheet -->
   <link rel="stylesheet" href="./styles/main.css">
 
@@ -63,10 +70,21 @@
           <span aria-hidden="true">📊</span> Dashboard
         </button>
       </li>
+      <li>
+        <button class="nav-btn" data-nav="challenges" id="nav-challenges-btn" aria-label="Weekly challenges">
+          <span aria-hidden="true">🎮</span> Challenges
+        </button>
+      </li>
+      <li>
+        <button class="nav-btn" data-nav="simulator" id="nav-simulator-btn" aria-label="What-if simulator">
+          <span aria-hidden="true">🔮</span> Simulator
+        </button>
+      </li>
     </ul>
 
     <div class="nav-right">
-      <button class="nav-reset-btn" id="reset-btn" aria-label="Reset all data">⚙ Reset data</button>
+      <button class="nav-icon-btn" id="export-btn" aria-label="Export data as CSV" title="Export data as CSV">📤</button>
+      <button class="nav-reset-btn" id="reset-btn" aria-label="Reset all data">⚙ Reset</button>
     </div>
   </nav>
 
@@ -144,6 +162,34 @@
 
     </section>
 
+    <!-- ── VIEW: Challenges ── -->
+    <section class="app-view hidden" id="view-challenges" aria-label="Weekly challenge mode">
+      <header style="padding: 2rem 0 1rem;">
+        <span class="section-label">Habit Building</span>
+        <h2 style="font-family:var(--font-heading);font-size:1.8rem;font-weight:700;margin-top:0.5rem;">
+          Weekly Challenges
+        </h2>
+        <p style="color:var(--text-secondary);font-size:0.9rem;">
+          One rotating challenge per week. Complete it to earn a badge. Progress is tracked from your daily logs.
+        </p>
+      </header>
+      <div id="challenges-section"></div>
+    </section>
+
+    <!-- ── VIEW: Simulator ── -->
+    <section class="app-view hidden" id="view-simulator" aria-label="What-if scenario simulator">
+      <header style="padding: 2rem 0 1rem;">
+        <span class="section-label">Decision Support</span>
+        <h2 style="font-family:var(--font-heading);font-size:1.8rem;font-weight:700;margin-top:0.5rem;">
+          What-If Simulator
+        </h2>
+        <p style="color:var(--text-secondary);font-size:0.9rem;">
+          See potential annual CO₂e savings before changing your behaviour. Rule-based · transparent.
+        </p>
+      </header>
+      <div id="simulator-section"></div>
+    </section>
+
   </main>
 
   <!-- ════════════════════════════════════════════════════
@@ -201,12 +247,16 @@
   ════════════════════════════════════════════════════ -->
   <script type="module" src="./scripts/app.js"></script>
 
-  <!-- Wire dashboard methodology link (can't be in module due to timing) -->
+  <!-- Wire dashboard methodology link -->
   <script>
     document.getElementById('dash-methodology-link')?.addEventListener('click', (e) => {
       e.preventDefault();
       window.showMethodologyModal?.();
     });
+    // Register service worker for offline support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW registration failed:', err));
+    }
   </script>
 
 </body>

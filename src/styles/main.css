@@ -1216,3 +1216,292 @@ body::after {
   white-space: nowrap;
   border-width: 0;
 }
+
+
+/* ============================================================
+   NAV — 5 TABS + EXPORT BUTTON
+   ============================================================ */
+.nav-links { gap: 0; }
+.nav-btn   { padding: 0.4rem 0.7rem; font-size: 0.82rem; }
+
+.nav-icon-btn {
+  background: none;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 1rem;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-height: 36px;
+}
+.nav-icon-btn:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.3); }
+
+/* ============================================================
+   DASHBOARD — NEW ELEMENTS
+   ============================================================ */
+.dash-card-title-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--space-lg); gap: var(--space-sm); flex-wrap: wrap;
+}
+.dash-card-title { margin: 0; }
+
+.report-card-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0.45rem 0.9rem;
+  background: rgba(18,217,138,0.12);
+  border: 1px solid rgba(18,217,138,0.35);
+  border-radius: var(--radius-sm);
+  color: var(--accent-green);
+  font-family: var(--font-body); font-size: 0.82rem; font-weight: 600;
+  cursor: pointer; transition: all var(--transition-fast); white-space: nowrap;
+}
+.report-card-btn:hover { background: rgba(18,217,138,0.22); transform: translateY(-1px); }
+
+.chart-period-toggle { display: flex; gap: 4px; }
+.chart-period-btn {
+  padding: 0.35rem 0.8rem;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm); color: var(--text-muted);
+  font-family: var(--font-body); font-size: 0.8rem; cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.chart-period-btn.active {
+  background: rgba(18,217,138,0.15); border-color: rgba(18,217,138,0.4);
+  color: var(--accent-green); font-weight: 600;
+}
+
+.kpi-item--good .kpi-value { color: var(--accent-green); }
+.kpi-item--bad  .kpi-value { color: var(--accent-red); }
+
+.cat-bar-row { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: 0.5rem; }
+.cat-bar-label { font-size: 0.82rem; width: 90px; flex-shrink: 0; color: var(--text-secondary); }
+.cat-bar-track { flex: 1; height: 8px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; }
+.cat-bar-fill  { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
+.cat-bar-value { font-size: 0.8rem; color: var(--text-muted); width: 52px; text-align: right; }
+
+.goal-banner {
+  display: flex; align-items: flex-start; gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+}
+.goal-banner.span-full { grid-column: 1 / -1; }
+.goal-banner--good { border-color: rgba(18,217,138,0.4) !important; }
+.goal-banner--warn { border-color: rgba(255,193,7,0.4) !important; }
+.goal-banner-icon { font-size: 1.4rem; flex-shrink: 0; }
+.goal-lever-tip { font-size: 0.84rem; color: var(--text-muted); margin-top: 0.3rem; }
+.btn-saved { border-color: var(--accent-green) !important; color: var(--accent-green) !important; }
+.legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: middle; }
+
+/* ============================================================
+   CALENDAR HEATMAP
+   ============================================================ */
+.heatmap-wrap { padding: var(--space-sm) 0; }
+.heatmap-inner { display: flex; gap: var(--space-xs); overflow-x: auto; padding-bottom: var(--space-sm); }
+.heatmap-day-labels { display: flex; flex-direction: column; gap: 4px; padding-top: 2px; flex-shrink: 0; }
+.heatmap-day-labels span { font-size: 0.65rem; color: var(--text-muted); width: 14px; text-align: center; line-height: 20px; }
+.heatmap-grid { display: flex; gap: 4px; }
+.heatmap-col  { display: flex; flex-direction: column; gap: 4px; }
+.heatmap-cell {
+  width: 20px; height: 20px; border-radius: 4px; cursor: default;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.heatmap-cell:hover { transform: scale(1.3); z-index: 10; box-shadow: 0 2px 12px rgba(0,0,0,0.4); }
+.heatmap-legend { display: flex; gap: var(--space-md); margin-top: var(--space-md); flex-wrap: wrap; }
+.heatmap-leg { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--text-muted); }
+.heatmap-leg-dot { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
+.heatmap-tip { font-size: 0.78rem; color: var(--text-muted); margin-top: var(--space-sm); margin-bottom: 0; }
+
+/* ============================================================
+   ONBOARDING COUNTRY GRID
+   ============================================================ */
+.country-grid { grid-template-columns: repeat(auto-fit,minmax(155px,1fr)); max-height: 280px; overflow-y: auto; padding-right: 4px; }
+.country-btn { flex-direction: row; justify-content: flex-start; gap: 8px; padding: 0.6rem 0.8rem; font-size: 0.84rem; }
+.country-btn small { font-size: 0.72rem; color: var(--text-muted); margin-left: auto; }
+
+/* ============================================================
+   FLIGHTS + JOURNAL IN ACTIVITY LOGGER
+   ============================================================ */
+.flight-section {
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed var(--glass-border);
+  border-radius: var(--radius-md); overflow: hidden;
+}
+.flight-toggle-btn {
+  display: flex; align-items: center; gap: var(--space-sm); width: 100%;
+  padding: var(--space-sm) var(--space-md); background: none; border: none;
+  color: var(--text-secondary); font-family: var(--font-body); font-size: 0.88rem;
+  cursor: pointer; text-align: left; transition: all var(--transition-fast);
+}
+.flight-toggle-btn:hover { color: var(--accent-teal); }
+.flight-toggle-icon { font-size: 1.1rem; }
+.flight-toggle-arrow { margin-left: auto; font-size: 0.7rem; color: var(--text-muted); }
+.flight-fields { padding: var(--space-md); border-top: 1px solid var(--glass-border); }
+.flight-info-note { font-size: 0.78rem; color: var(--text-muted); margin-bottom: var(--space-md); line-height: 1.5; }
+
+.journal-section { margin-top: var(--space-sm); }
+.journal-textarea {
+  width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm); color: var(--text-primary); font-family: var(--font-body);
+  font-size: 0.9rem; padding: 0.7rem 1rem; resize: vertical; outline: none;
+  transition: border-color var(--transition-fast); box-sizing: border-box;
+}
+.journal-textarea:focus { border-color: var(--accent-green); }
+.optional-tag {
+  font-size: 0.72rem; color: var(--text-muted); background: rgba(255,255,255,0.06);
+  border-radius: 99px; padding: 1px 8px; vertical-align: middle; font-weight: 400; margin-left: 6px;
+}
+
+/* ============================================================
+   WHAT-IF SIMULATOR
+   ============================================================ */
+.simulator-wrapper { display: flex; flex-direction: column; gap: var(--space-xl); max-width: 900px; margin: 0 auto; }
+.sim-baseline-card { padding: var(--space-xl); }
+.sim-baseline-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: var(--space-md); margin-bottom: var(--space-lg); flex-wrap: wrap;
+}
+.sim-baseline-title { font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; margin: 0 0 4px; }
+.sim-baseline-source { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
+.sim-baseline-total { text-align: right; }
+.sim-big-num { font-family: var(--font-heading); font-size: 2.5rem; font-weight: 800; color: var(--text-primary); display: block; }
+.sim-big-unit { font-size: 0.82rem; color: var(--text-muted); }
+.sim-cat-row { display: flex; gap: var(--space-md); flex-wrap: wrap; }
+.sim-cat-chip {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: var(--space-sm) var(--space-md); background: rgba(255,255,255,0.04);
+  border: 1px solid var(--glass-border); border-left: 3px solid var(--cat-color);
+  border-radius: var(--radius-sm); min-width: 80px;
+}
+.sim-cat-chip span { font-size: 1.1rem; }
+.sim-cat-chip strong { font-size: 1rem; color: var(--cat-color); }
+.sim-cat-chip small { font-size: 0.72rem; color: var(--text-muted); }
+
+.sim-scenarios-heading { font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; margin: 0 0 4px; }
+.sim-scenarios-sub { color: var(--text-muted); font-size: 0.88rem; margin-bottom: var(--space-lg); }
+.sim-scenarios-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); }
+.sim-scenario-card { padding: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-md); }
+.sim-scenario-top { display: flex; gap: var(--space-md); align-items: flex-start; }
+.sim-scenario-emoji { font-size: 2rem; flex-shrink: 0; line-height: 1; }
+.sim-scenario-title { font-family: var(--font-heading); font-size: 0.95rem; font-weight: 700; margin: 0 0 4px; }
+.sim-scenario-sub-text { font-size: 0.78rem; color: var(--text-muted); margin: 0; line-height: 1.4; }
+.sim-scenario-sub-text strong { color: var(--text-primary); }
+
+.sim-slider-label { font-size: 0.84rem; color: var(--text-secondary); display: block; margin-bottom: 0.4rem; }
+.sim-val { color: var(--accent-green); font-weight: 700; }
+.sim-slider {
+  width: 100%; -webkit-appearance: none; appearance: none; height: 6px;
+  background: rgba(255,255,255,0.1); border-radius: 99px; outline: none; cursor: pointer;
+}
+.sim-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 18px; height: 18px;
+  border-radius: 50%; background: var(--accent-green); border: 2px solid rgba(255,255,255,0.2);
+  cursor: pointer; transition: transform 0.1s ease;
+}
+.sim-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.sim-slider-ticks { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; }
+.sim-control-row-inline { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: 0.5rem; flex-wrap: wrap; }
+.sim-select {
+  background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm); color: var(--text-primary);
+  font-family: var(--font-body); font-size: 0.82rem; padding: 0.3rem 0.6rem; cursor: pointer; outline: none;
+}
+.sim-select option { background: var(--bg-secondary); }
+.sim-saving-box {
+  display: flex; align-items: baseline; gap: 8px;
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(18,217,138,0.06); border: 1px solid rgba(18,217,138,0.2); border-radius: var(--radius-sm);
+}
+.sim-saving-num { font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800; color: var(--accent-green); }
+.sim-saving-unit { font-size: 0.78rem; color: var(--text-muted); }
+.sim-equiv { font-size: 0.75rem; color: var(--text-muted); margin: 0; font-style: italic; min-height: 1rem; }
+.sim-energy-toggle { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+.sim-toggle-btn {
+  padding: 0.5rem 1rem; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm); color: var(--text-muted);
+  font-family: var(--font-body); font-size: 0.82rem; cursor: pointer; transition: all var(--transition-fast);
+}
+.sim-toggle-btn.active { background: rgba(18,217,138,0.15); border-color: rgba(18,217,138,0.5); color: var(--accent-green); font-weight: 600; }
+.sim-total-card { padding: var(--space-xl); }
+.sim-total-row { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-md); margin-bottom: var(--space-lg); flex-wrap: wrap; }
+.sim-total-title { font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; margin: 0 0 4px; }
+.sim-total-sub { font-size: 0.82rem; color: var(--text-muted); margin: 0; }
+.sim-total-right { text-align: right; }
+.sim-total-num { font-family: var(--font-heading); font-size: 3rem; font-weight: 800; color: var(--accent-green); display: block; }
+.sim-total-unit { font-size: 0.82rem; color: var(--text-muted); }
+.sim-total-bar-track { height: 10px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
+.sim-total-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-green), var(--accent-teal)); border-radius: 99px; transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+.sim-total-bar-labels { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-bottom: var(--space-sm); }
+.sim-total-note { font-size: 0.85rem; color: var(--text-secondary); margin: 0; min-height: 1.4em; font-style: italic; }
+
+/* ============================================================
+   WEEKLY CHALLENGES
+   ============================================================ */
+.challenges-page { display: flex; flex-direction: column; gap: var(--space-xl); max-width: 780px; margin: 0 auto; }
+.challenge-hero { display: flex; gap: var(--space-lg); padding: var(--space-xl); position: relative; border: 1px solid var(--glass-border); }
+.challenge-hero-left { flex-shrink: 0; }
+.challenge-big-icon-wrap { width: 72px; height: 72px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; }
+.challenge-big-icon { font-size: 2.4rem; }
+.challenge-hero-body { flex: 1; min-width: 0; }
+.challenge-week-tag { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.05em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+.challenge-hero-title { font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; margin: 0 0 6px; }
+.challenge-hero-desc { font-size: 0.9rem; color: var(--text-secondary); margin: 0 0 var(--space-lg); }
+.challenge-progress-area { margin-bottom: var(--space-md); }
+.challenge-progress-hdr { display: flex; justify-content: space-between; font-size: 0.84rem; color: var(--text-secondary); margin-bottom: 6px; }
+.challenge-progress-track { height: 8px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
+.challenge-progress-fill { height: 100%; border-radius: 99px; transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+.challenge-days { display: flex; gap: 8px; margin-bottom: var(--space-md); flex-wrap: wrap; }
+.challenge-day-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.challenge-day-wrap.is-today .challenge-day-lbl { color: var(--accent-green); font-weight: 700; }
+.challenge-day-dot {
+  width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--glass-border);
+  display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700;
+  transition: all var(--transition-fast);
+}
+.challenge-day-dot.future { color: var(--text-muted); font-size: 1.2rem; }
+.challenge-day-dot.unlogged { color: var(--text-muted); border-style: dashed; }
+.challenge-day-dot.pass { color: white; }
+.challenge-day-dot.fail { background: rgba(255,107,107,0.15); border-color: rgba(255,107,107,0.5); color: #ff6b6b; }
+.challenge-day-lbl { font-size: 0.7rem; color: var(--text-muted); }
+.challenge-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); flex-wrap: wrap; }
+.challenge-saving-note { font-size: 0.78rem; color: var(--text-muted); }
+.challenge-reward-badge { font-size: 0.82rem; padding: 4px 10px; border-radius: 99px; font-weight: 600; }
+.challenge-reward-badge.earned { background: rgba(18,217,138,0.15); color: var(--accent-green); border: 1px solid rgba(18,217,138,0.4); }
+.challenge-reward-badge.locked { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--glass-border); }
+.challenge-complete-seal { position: absolute; top: var(--space-lg); right: var(--space-lg); text-align: center; font-size: 1.8rem; line-height: 1; animation: float 3s ease-in-out infinite; }
+.challenge-complete-seal small { display: block; font-size: 0.65rem; color: var(--accent-green); font-weight: 700; margin-top: 2px; }
+.challenges-all-card { padding: var(--space-xl); }
+.challenges-all-title { font-family: var(--font-heading); font-size: 1rem; font-weight: 700; margin: 0 0 4px; }
+.challenges-all-sub { font-size: 0.82rem; color: var(--text-muted); margin: 0 0 var(--space-lg); }
+.challenges-rotation-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+.rotation-row { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-sm); background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); transition: all var(--transition-fast); }
+.rotation-row.rotation-active { background: rgba(18,217,138,0.06); border-color: rgba(18,217,138,0.3); }
+.rotation-icon { font-size: 1.4rem; flex-shrink: 0; }
+.rotation-info { flex: 1; min-width: 0; }
+.rotation-info strong { display: block; font-size: 0.88rem; }
+.rotation-info span { font-size: 0.76rem; color: var(--text-muted); }
+.rotation-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.rotation-reward { font-size: 0.72rem; color: var(--text-muted); }
+.rotation-active-badge { font-size: 0.68rem; padding: 2px 8px; background: rgba(18,217,138,0.15); border: 1px solid rgba(18,217,138,0.4); border-radius: 99px; color: var(--accent-green); font-weight: 600; }
+
+/* ============================================================
+   RESPONSIVE UPDATES
+   ============================================================ */
+@media (max-width: 900px) { .sim-scenarios-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) {
+  .challenge-hero { flex-direction: column; }
+  .challenge-complete-seal { top: var(--space-md); right: var(--space-md); }
+  .sim-baseline-header, .sim-total-row { flex-direction: column; }
+  .sim-baseline-total, .sim-total-right { text-align: left; }
+  .sim-total-num { font-size: 2rem; }
+  .dash-card-title-row { flex-direction: column; align-items: flex-start; }
+  .heatmap-cell { width: 16px; height: 16px; }
+  .nav-btn { padding: 0.35rem 0.45rem; font-size: 0.74rem; }
+}
+@media (max-width: 480px) {
+  .country-grid { grid-template-columns: 1fr; }
+  .sim-cat-row { flex-direction: column; }
+  .challenge-days { gap: 4px; }
+  .challenge-day-dot { width: 30px; height: 30px; font-size: 0.8rem; }
+  .heatmap-cell { width: 14px; height: 14px; border-radius: 3px; }
+}

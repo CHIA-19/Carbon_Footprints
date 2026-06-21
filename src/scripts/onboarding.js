@@ -1,11 +1,20 @@
 /**
  * onboarding.js
  * =============
- * Handles the one-time onboarding flow: 5 quick questions to build the user's
+ * Handles the one-time onboarding flow: 6 quick questions to build the user's
  * baseline profile stored in localStorage via storage.js.
+ *
+ * Steps:
+ *   1. Name (optional)
+ *   2. Commute mode
+ *   3. Diet pattern
+ *   4. Home energy type
+ *   5. Country / region  ← NEW — sets country-specific electricity grid factor
+ *   6. Household size
  */
 
 import { saveProfile, markOnboardingComplete } from './storage.js';
+import { EMISSION_FACTORS } from '../data/emissionFactors.js';
 
 /**
  * Render the onboarding overlay and handle profile collection.
@@ -15,6 +24,12 @@ export function renderOnboarding(onComplete) {
   const overlay = document.getElementById('onboarding-overlay');
   if (!overlay) return;
 
+  // Build country options from emissionFactors data
+  const countryEntries = Object.entries(EMISSION_FACTORS.gridIntensityByCountry || {});
+  const countryOptions = countryEntries.map(([key, val]) =>
+    `<button class="option-btn country-btn" data-value="${key}">${val.label}<small>${val.kg} kg/kWh</small></button>`
+  ).join('');
+
   overlay.classList.remove('hidden');
   overlay.innerHTML = `
     <div class="onboarding-card glass-card" role="dialog" aria-labelledby="ob-title">
@@ -23,13 +38,11 @@ export function renderOnboarding(onComplete) {
         <span class="logo-text">CarbonLite</span>
       </div>
 
+      <!-- ── Step 1: Name ── -->
       <div class="onboarding-step" id="ob-step-1">
         <div class="step-indicator">
-          <span class="step-dot active"></span>
-          <span class="step-dot"></span>
-          <span class="step-dot"></span>
-          <span class="step-dot"></span>
-          <span class="step-dot"></span>
+          <span class="step-dot active"></span><span class="step-dot"></span><span class="step-dot"></span>
+          <span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span>
         </div>
         <h2 id="ob-title">Hey there! What's your name?</h2>
         <p class="ob-subtitle">Optional — just for a friendlier experience</p>
@@ -37,13 +50,11 @@ export function renderOnboarding(onComplete) {
         <button class="btn-primary" id="ob-next-1">Get Started →</button>
       </div>
 
+      <!-- ── Step 2: Commute mode ── -->
       <div class="onboarding-step hidden" id="ob-step-2">
         <div class="step-indicator">
-          <span class="step-dot done"></span>
-          <span class="step-dot active"></span>
-          <span class="step-dot"></span>
-          <span class="step-dot"></span>
-          <span class="step-dot"></span>
+          <span class="step-dot done"></span><span class="step-dot active"></span><span class="step-dot"></span>
+          <span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span>
         </div>
         <h2>How do you usually commute?</h2>
         <p class="ob-subtitle">Pick your main mode — this personalises your tips</p>
@@ -69,13 +80,11 @@ export function renderOnboarding(onComplete) {
         <button class="btn-secondary" id="ob-next-2" disabled>Continue →</button>
       </div>
 
+      <!-- ── Step 3: Diet ── -->
       <div class="onboarding-step hidden" id="ob-step-3">
         <div class="step-indicator">
-          <span class="step-dot done"></span>
-          <span class="step-dot done"></span>
-          <span class="step-dot active"></span>
-          <span class="step-dot"></span>
-          <span class="step-dot"></span>
+          <span class="step-dot done"></span><span class="step-dot done"></span><span class="step-dot active"></span>
+          <span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span>
         </div>
         <h2>How would you describe your diet?</h2>
         <p class="ob-subtitle">Used to personalise your food insights and tips</p>
@@ -88,13 +97,11 @@ export function renderOnboarding(onComplete) {
         <button class="btn-secondary" id="ob-next-3" disabled>Continue →</button>
       </div>
 
+      <!-- ── Step 4: Home energy type ── -->
       <div class="onboarding-step hidden" id="ob-step-4">
         <div class="step-indicator">
-          <span class="step-dot done"></span>
-          <span class="step-dot done"></span>
-          <span class="step-dot done"></span>
-          <span class="step-dot active"></span>
-          <span class="step-dot"></span>
+          <span class="step-dot done"></span><span class="step-dot done"></span><span class="step-dot done"></span>
+          <span class="step-dot active"></span><span class="step-dot"></span><span class="step-dot"></span>
         </div>
         <h2>What powers your home?</h2>
         <p class="ob-subtitle">This affects how we calculate your electricity impact</p>
@@ -106,13 +113,25 @@ export function renderOnboarding(onComplete) {
         <button class="btn-secondary" id="ob-next-4" disabled>Continue →</button>
       </div>
 
+      <!-- ── Step 5: Country ── NEW ──-->
       <div class="onboarding-step hidden" id="ob-step-5">
         <div class="step-indicator">
-          <span class="step-dot done"></span>
-          <span class="step-dot done"></span>
-          <span class="step-dot done"></span>
-          <span class="step-dot done"></span>
-          <span class="step-dot active"></span>
+          <span class="step-dot done"></span><span class="step-dot done"></span><span class="step-dot done"></span>
+          <span class="step-dot done"></span><span class="step-dot active"></span><span class="step-dot"></span>
+        </div>
+        <h2>Where do you live?</h2>
+        <p class="ob-subtitle">Personalises your electricity factor — grids vary enormously by country</p>
+        <div class="option-grid country-grid" id="ob-country-options">
+          ${countryOptions}
+        </div>
+        <button class="btn-secondary" id="ob-next-5" disabled>Continue →</button>
+      </div>
+
+      <!-- ── Step 6: Household size ── -->
+      <div class="onboarding-step hidden" id="ob-step-6">
+        <div class="step-indicator">
+          <span class="step-dot done"></span><span class="step-dot done"></span><span class="step-dot done"></span>
+          <span class="step-dot done"></span><span class="step-dot done"></span><span class="step-dot active"></span>
         </div>
         <h2>How many people share your home?</h2>
         <p class="ob-subtitle">We divide household energy emissions fairly across members</p>
@@ -131,7 +150,10 @@ export function renderOnboarding(onComplete) {
 }
 
 function _initOnboardingInteractions(overlay, onComplete) {
-  const state = { name: '', commuteMode: '', carFuelType: 'petrol', dietPattern: '', energyType: '', householdSize: 1 };
+  const state = {
+    name: '', commuteMode: '', carFuelType: 'petrol',
+    dietPattern: '', energyType: '', country: 'world_avg', householdSize: 1,
+  };
 
   // Step 1 → 2
   document.getElementById('ob-next-1')?.addEventListener('click', () => {
@@ -143,7 +165,7 @@ function _initOnboardingInteractions(overlay, onComplete) {
   });
 
   // Step 2: commute mode
-  _initOptionGrid('ob-commute-options', (val) => {
+  _initOptionGrid('ob-commute-options', val => {
     state.commuteMode = val;
     document.getElementById('ob-next-2').disabled = false;
     const isCar = ['car', 'rideshare'].includes(val);
@@ -153,20 +175,27 @@ function _initOnboardingInteractions(overlay, onComplete) {
   document.getElementById('ob-next-2')?.addEventListener('click', () => _goto(2, 3));
 
   // Step 3: diet
-  _initOptionGrid('ob-diet-options', (val) => {
+  _initOptionGrid('ob-diet-options', val => {
     state.dietPattern = val;
     document.getElementById('ob-next-3').disabled = false;
   });
   document.getElementById('ob-next-3')?.addEventListener('click', () => _goto(3, 4));
 
-  // Step 4: energy
-  _initOptionGrid('ob-energy-options', (val) => {
+  // Step 4: energy type
+  _initOptionGrid('ob-energy-options', val => {
     state.energyType = val;
     document.getElementById('ob-next-4').disabled = false;
   });
   document.getElementById('ob-next-4')?.addEventListener('click', () => _goto(4, 5));
 
-  // Step 5: household size
+  // Step 5: country
+  _initOptionGrid('ob-country-options', val => {
+    state.country = val;
+    document.getElementById('ob-next-5').disabled = false;
+  });
+  document.getElementById('ob-next-5')?.addEventListener('click', () => _goto(5, 6));
+
+  // Step 6: household size
   let hh = 1;
   document.getElementById('hh-inc')?.addEventListener('click', () => {
     hh = Math.min(10, hh + 1);

@@ -112,7 +112,29 @@ export const EMISSION_FACTORS = {
     car_km_per_kg_co2:  5.88,   // 1 kg CO2e ≈ 5.88 km in average petrol car (1/0.170)
     tree_offset_kg_year: 21,    // One mature tree absorbs ~21 kg CO2/year (IPCC estimate)
     smartphone_charges_per_kg: 121, // 1 kg CO2e ~ charging a smartphone 121 times
-  }
+  },
+
+  // ─────────────────────────────────────────────────────────────────
+  // COUNTRY-SPECIFIC ELECTRICITY GRID INTENSITIES  (kg CO₂e / kWh)
+  // Source: IEA Electricity Information 2023 / Our World in Data 2023
+  // Allows personalised electricity factors based on user's country.
+  // ─────────────────────────────────────────────────────────────────
+  gridIntensityByCountry: {
+    world_avg:    { label: '🌍 World Average',    kg: 0.436 },
+    india:        { label: '🇮🇳 India',            kg: 0.708 },
+    china:        { label: '🇨🇳 China',            kg: 0.555 },
+    usa:          { label: '🇺🇸 USA',              kg: 0.386 },
+    uk:           { label: '🇬🇧 United Kingdom',   kg: 0.207 },
+    germany:      { label: '🇩🇪 Germany',          kg: 0.364 },
+    australia:    { label: '🇦🇺 Australia',        kg: 0.610 },
+    japan:        { label: '🇯🇵 Japan',            kg: 0.471 },
+    south_africa: { label: '🇿🇦 South Africa',     kg: 0.900 },
+    brazil:       { label: '🇧🇷 Brazil',           kg: 0.074 },
+    canada:       { label: '🇨🇦 Canada',           kg: 0.130 },
+    france:       { label: '🇫🇷 France',           kg: 0.052 },
+    norway:       { label: '🇳🇴 Norway',           kg: 0.011 },
+    mexico:       { label: '🇲🇽 Mexico',           kg: 0.428 },
+  },
 };
 
 /**
@@ -140,15 +162,20 @@ export function getFoodFactor(mealType) {
 }
 
 /**
- * Helper: Get electricity factor based on user's energy profile.
+ * Helper: Get electricity factor based on user's energy profile and country.
  * @param {string} energyType - 'grid' | 'renewable' | 'unsure'
+ * @param {string|null} [country] - country key from gridIntensityByCountry (optional)
  * @returns {number} kg CO2e per kWh
  */
-export function getElectricityFactor(energyType) {
+export function getElectricityFactor(energyType, country = null) {
+  if (energyType === 'renewable') return EMISSION_FACTORS.energy.electricity_renewable;
+  // Use country-specific grid intensity when available (for 'grid' or 'unsure')
+  if (country && country !== 'world_avg' && EMISSION_FACTORS.gridIntensityByCountry[country]) {
+    return EMISSION_FACTORS.gridIntensityByCountry[country].kg;
+  }
   const map = {
-    grid:      EMISSION_FACTORS.energy.electricity_grid,
-    renewable: EMISSION_FACTORS.energy.electricity_renewable,
-    unsure:    EMISSION_FACTORS.energy.electricity_unsure,
+    grid:   EMISSION_FACTORS.energy.electricity_grid,
+    unsure: EMISSION_FACTORS.energy.electricity_unsure,
   };
   return map[energyType] ?? EMISSION_FACTORS.energy.electricity_unsure;
 }

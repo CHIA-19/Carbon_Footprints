@@ -18,6 +18,8 @@ const KEYS = {
   SUGGESTIONS:    'CF_SUGGESTIONS',
   GOAL:           'CF_GOAL',
   SEEN_ONBOARDING:'CF_SEEN_ONBOARDING',
+  EVENTS:         'CF_EVENTS',         // one-off big events (flights, cruises)
+  CHALLENGES:     'CF_CHALLENGES',     // current challenge override (reserved for future)
 };
 
 // ─────────────────────────────────────────────────────────────────
@@ -172,6 +174,46 @@ export function saveGoal(percent) {
 
 export function loadGoal() {
   return read(KEYS.GOAL);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Special Events (one-off flights, road trips, etc.)
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * Save a one-off event (flight, cruise, road trip).
+ * @param {Object} event — { date, type, description, kg, distanceKm }
+ */
+export function saveEvent(event) {
+  const events = read(KEYS.EVENTS) || [];
+  events.push({ ...event, id: Date.now().toString(), savedAt: new Date().toISOString() });
+  write(KEYS.EVENTS, events.slice(-100)); // keep last 100
+}
+
+/**
+ * Load special events in the last N days.
+ * @param {number} [days=90]
+ * @returns {Object[]}
+ */
+export function loadRecentEvents(days = 90) {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  const cutoffStr = cutoff.toISOString().slice(0, 10);
+  return (read(KEYS.EVENTS) || []).filter(e => (e.date || '') >= cutoffStr);
+}
+
+/**
+ * Update the 'note' field of an existing day's log.
+ * @param {string} date — YYYY-MM-DD
+ * @param {string} note
+ */
+export function saveJournalNote(date, note) {
+  const logs = read(KEYS.LOGS) || [];
+  const idx  = logs.findIndex(l => l.date === date);
+  if (idx >= 0) {
+    logs[idx].note = note;
+    write(KEYS.LOGS, logs);
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────
